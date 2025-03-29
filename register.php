@@ -82,8 +82,11 @@
                 <button type="submit" name="submit" class="btn">Register</button>
             </form>
         </div>
+        <div class="section" style="margin-top: 10px;">
+            <h2>already have an account?</h2>
+            <a href="login.php" class="btn">Login Now</a>
+        </div>
     </div>
-
 </body>
 
 </html>
@@ -96,24 +99,24 @@ if (isset($_POST['submit'])) {
     $blood_group = $_POST['blood_group'];
     $location = $_POST['location'];
 
-       // Check if email already exists
-       $checkQuery = "SELECT * FROM `doners` WHERE `email` = ?";
-       $stmt = $con->prepare($checkQuery);
-       $stmt->bind_param("s", $email);
-       $stmt->execute();
-       $stmt->store_result();
-       if ($stmt->num_rows > 0) {
+    // Check if email already exists
+    $checkQuery = "SELECT * FROM `doners` WHERE `email` = ?";
+    $stmt = $con->prepare($checkQuery);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+    if ($stmt->num_rows > 0) {
         echo "<script>alert('This email is already registered! Try another email.');</script>";
     } else {
 
-    $stmt = $con->prepare("INSERT INTO `doners`(`name`, `email`, `password`, `blood_group`, `location`) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $name, $email, $password, $blood_group, $location);
+        $stmt = $con->prepare("INSERT INTO `doners`(`name`, `email`, `password`, `blood_group`, `location`) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $name, $email, $password, $blood_group, $location);
 
-    if ($stmt->execute()) {
-        echo "<script>alert('Registered successfully!'); window.location.href = 'login.php';</script>";
-    } else {
-        echo "<script>alert('Error occurred while registering. Try again.');</script>";
-    }
+        if ($stmt->execute()) {
+            echo "<script>alert('Registered successfully!'); window.location.href = 'login.php';</script>";
+        } else {
+            echo "<script>alert('Error occurred while registering. Try again.');</script>";
+        }
     }
     $stmt->close();
 }
