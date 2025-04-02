@@ -3,10 +3,15 @@ session_start();
 include 'connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-    // Check if the user exists
+    if (empty($email) || empty($password)) {
+        header("Location: login.php?error=EmptyFields");
+        exit();
+    }
+
+    // Fetch user from database
     $stmt = $con->prepare("SELECT id, name, email, password, blood_group, location FROM doners WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -15,7 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->fetch();
 
     if ($stmt->num_rows > 0) {
-        // Verify the password
         if (password_verify($password, $hashed_password)) {
             $_SESSION['user_id'] = $id;
             $_SESSION['user_name'] = $name;
@@ -23,12 +27,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_blood_group'] = $blood_group;
             $_SESSION['user_location'] = $location;
 
-            echo "<script>alert('Login successful!'); window.location.href='dashboard.php';</script>";
+            header("Location: login.php?login=success");
+            exit();
         } else {
-            echo "<script>alert('Invalid password!'); window.location.href='login.php';</script>";
+            header("Location: login.php?error=InvalidPassword");
+            exit();
         }
     } else {
-        echo "<script>alert('User not found!'); window.location.href='login.php';</script>";
+        header("Location: login.php?error=UserNotFound");
+        exit();
     }
 
     $stmt->close();
