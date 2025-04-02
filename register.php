@@ -1,4 +1,7 @@
-<?php include 'connection.php'; ?>
+<?php 
+include 'connection.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -64,6 +67,16 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -73,7 +86,15 @@
     <div class="container">
         <div class="section">
             <h2>Register as a Donor</h2>
-            <form id="registerForm" method="post" action="">
+            
+            <!-- Show error/success messages -->
+            <?php if (isset($_GET['message'])): ?>
+                <div class="<?= $_GET['status'] == 'error' ? 'error' : 'success' ?>">
+                    <?= htmlspecialchars($_GET['message']) ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="post" action="register_process.php">
                 <input type="text" name="name" placeholder="Full Name" required>
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
@@ -83,41 +104,10 @@
             </form>
         </div>
         <div class="section" style="margin-top: 10px;">
-            <h2>already have an account?</h2>
+            <h2>Already have an account?</h2>
             <a href="login.php" class="btn">Login Now</a>
         </div>
     </div>
 </body>
 
 </html>
-
-<?php
-if (isset($_POST['submit'])) {
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Securely hash the password
-    $blood_group = $_POST['blood_group'];
-    $location = $_POST['location'];
-
-    // Check if email already exists
-    $checkQuery = "SELECT * FROM `doners` WHERE `email` = ?";
-    $stmt = $con->prepare($checkQuery);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
-    if ($stmt->num_rows > 0) {
-        echo "<script>alert('This email is already registered! Try another email.');</script>";
-    } else {
-
-        $stmt = $con->prepare("INSERT INTO `doners`(`name`, `email`, `password`, `blood_group`, `location`) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $name, $email, $password, $blood_group, $location);
-
-        if ($stmt->execute()) {
-            echo "<script>alert('Registered successfully!'); window.location.href = 'login.php';</script>";
-        } else {
-            echo "<script>alert('Error occurred while registering. Try again.');</script>";
-        }
-    }
-    $stmt->close();
-}
-?>
