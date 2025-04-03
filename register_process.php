@@ -4,11 +4,13 @@ include 'connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize and validate input
-    $name = htmlspecialchars(trim($_POST['name']));
+    $name = htmlspecialchars(strip_tags(trim($_POST['name'])));
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $password = trim($_POST['password']);
-    $blood_group = htmlspecialchars(trim($_POST['blood_group']));
-    $location = htmlspecialchars(trim($_POST['location']));
+    $blood_group = htmlspecialchars(strip_tags(trim($_POST['blood_group'])));
+    $location = htmlspecialchars(strip_tags(trim($_POST['location'])));
+    $gender = isset($_POST['gender']) ? $_POST['gender'] : null;  // Capture gender
+
 
     // Basic validation
     if (empty($name) || empty($email) || empty($password) || empty($blood_group) || empty($location)) {
@@ -25,9 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Hash the password securely
     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-    // Check if email already exists
-    $checkQuery = "SELECT * FROM `doners` WHERE `email` = ?";
-    $stmt = $con->prepare($checkQuery);
+    // Check if email already exists (Fix table name issue)
+    $stmt = $con->prepare("SELECT email FROM `doners` WHERE `email` = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
@@ -37,12 +38,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
+    $stmt->close();
+
+    // Validate age
+    $age = intval($_POST['age']);
+    if ($age < 18) {
+        header("Location: register.php?status=error&message=You must be at least 18 years old to register.");
+        exit();
+    }
+    
+
     // Insert new user
-    $stmt = $con->prepare("INSERT INTO `doners`(`name`, `email`, `password`, `blood_group`, `location`) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $name, $email, $hashed_password, $blood_group, $location);
+    $stmt = $con->prepare("INSERT INTO `doners`(`name`, `age`, `gender`, `email`, `password`, `blood_group`, `location`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sisssss", $name, $age, $gender, $email, $hashed_password, $blood_group, $location);
+    
 
     if ($stmt->execute()) {
-        header("Location: login.php?status=success&message=Registered successfully! You can now login.");
+       // header("Location: login.php?status=success&message=Registered successfully! You can now log in.");
+        echo "<div style='color: green; font-weight: bold;'>Register successful! Redirecting...</div>";
+        echo "<script>setTimeout(() => { window.location.href='login.php'; }, 2000);</script>";
         exit();
     } else {
         header("Location: register.php?status=error&message=Error occurred while registering. Try again.");
@@ -50,5 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $stmt->close();
+    $con->close();
 }
 ?>
