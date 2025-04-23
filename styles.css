@@ -1,0 +1,272 @@
+/* ==== Global Styles ==== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ==== Header Styles ==== */
+header {
+    background-color: #d10000;
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.logo span {
+    color: #ffcc00;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+}
+
+nav ul li {
+    position: relative;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #ffcc00;
+}
+
+/* ==== Dropdown Menu Styles ==== */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    z-index: 999;
+    flex-direction: column;
+    padding: 0;
+}
+
+.dropdown-content li {
+    list-style: none;
+}
+
+.dropdown-content li a {
+    color: #333;
+    padding: 10px 16px;
+    display: block;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.dropdown-content li a:hover {
+    background-color: #f0f0f0;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.hero-image {
+    width: 100%;
+    max-height: 1000px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 20px;
+    border-radius: 10px;
+}
+
+.hero {
+    text-align: center;
+    background-image: url('path-to-image.jpg');
+    padding: 30px;
+    color: #333;
+}
+
+.donate-btn {
+    background-color: #ffcc00;
+    color: #d10000;
+    padding: 0.5rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.donate-btn:hover {
+    background-color: #ffd700;
+}
+
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* ==== Footer Styles ==== */
+footer {
+    background-color: #222;
+    color: white;
+    padding: 3rem 2rem;
+    margin-top: 2rem;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #ffcc00;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section ul li a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #ffcc00;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-links a {
+    color: white;
+    font-size: 1.5rem;
+    transition: color 0.3s;
+}
+
+.social-links a:hover {
+    color: #ffcc00;
+}
+
+.newsletter input {
+    padding: 0.5rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border: none;
+    border-radius: 3px;
+}
+
+.newsletter button {
+    background-color: #d10000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.newsletter button:hover {
+    background-color: #ff0000;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #444;
+    color: #aaa;
+}
+
+/* ==== Responsive Styles ==== */
+@media (max-width: 768px) {
+    nav ul {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background-color: #d10000;
+        padding: 1rem;
+    }
+
+    nav ul.active {
+        display: flex;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .donate-btn {
+        display: none;
+    }
+
+    /* Make sure dropdowns work on mobile */
+    .dropdown-content {
+        position: static;
+        box-shadow: none;
+        background-color: transparent;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown-content li a {
+        color: white;
+        background-color: transparent;
+        padding: 0.5rem 1rem;
+    }
+
+    .dropdown-content li a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}

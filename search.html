@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Blood</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0; background: #f8f8f8; }
+        header { background: red; color: white; padding: 20px; font-size: 24px; }
+        .container { padding: 20px; }
+        .section { margin: 20px auto; padding: 20px; width: 80%; border-radius: 10px; box-shadow: 0 0 10px gray; background: white; }
+        .btn { background: red; color: white; padding: 10px 15px; border: none; cursor: pointer; margin-top: 10px; font-size: 16px; border-radius: 5px; }
+        .btn:hover { background: darkred; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        .donor-results { text-align: left; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <header>Find Blood Donors</header>
+    
+    <div class="container">
+        <div class="section">
+            <h2>Search for Blood Donors</h2>
+            <input type="text" id="searchBloodGroup" placeholder="Enter Blood Group (e.g., A+, O-)" required>
+            <button onclick="searchDonors()" class="btn">Search</button>
+            <div id="donorResults" class="donor-results"></div>
+        </div>
+    </div>
+
+    <script>
+        const donors = [
+            { name: "John Doe", bloodGroup: "A+", contact: "123-456-7890", location: "New York" },
+            { name: "Jane Smith", bloodGroup: "O-", contact: "987-654-3210", location: "Los Angeles" }
+        ];
+
+        function searchDonors() {
+            const bloodGroup = document.getElementById('searchBloodGroup').value.toUpperCase();
+            const results = donors.filter(donor => donor.bloodGroup === bloodGroup);
+            const donorResults = document.getElementById('donorResults');
+
+            if (results.length > 0) {
+                donorResults.innerHTML = results.map(donor => `
+                    <div class="donor">
+                        <h3>${donor.name}</h3>
+                        <p>Blood Group: ${donor.bloodGroup}</p>
+                        <p>Contact: ${donor.contact}</p>
+                        <p>Location: ${donor.location}</p>
+                    </div>
+                `).join('');
+            } else {
+                donorResults.innerHTML = `<p>No donors found for blood group ${bloodGroup}.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
