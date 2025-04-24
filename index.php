@@ -4,98 +4,409 @@ include 'connection.php'; // Include your database connection here
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Bank System</title>
+    <title>Blood Bank Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- ==== Header (Navigation Bar) ==== -->
+    <header>
+        <div class="header-container">
+            <div class="logo">Blood<span>Care</span></div>
+            <nav>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul id="navMenu">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Donors</a></li>
+                    <li><a href="#">Blood Inventory</a></li>
+                    <li><a href="search.php">Find Blood</a></li>
+                    <li><a href="#about-us">About Us</a></li>
+                    <li class="dropdown">
+                        <a href="login.php">Login</a>
+                        <ul class="dropdown-content">
+                            <li><a href="login.php">Admin Login</a></li>
+                            <li><a href="login.php">User Login</a></li>
+                        </ul>
+                    </li>
+    
+
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ==== Main Content ==== -->
+    <main>
+        <!-- Hero Section -->
+        <div class="hero">
+            <img src="Images/Bloodcare.webp" alt="Blood Donation" class="hero-image">
+            <h1>Welcome to BloodCare</h1>
+            <p>Your trusted blood bank management system.</p>
+            <a href="search.php" class="cta-btn">Find a Donor</a>
+        </div>
+
+      <!-- === About Us Section === -->
+<section id="about-us" class="about-section">
+    <div class="about-container">
+        <!-- Left Column - Content -->
+        <div class="about-content">
+            <h2>About <span>BloodCare</span></h2>
+            <p class="tagline">Saving Lives Through Technology</p>
+            <p>Founded in 2025, BloodCare is Nepal's premier digital blood bank platform connecting donors with recipients in real-time. Our mission is to eliminate blood shortages through innovation.</p>
+            
+            <div class="features-box">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Rapid Matching</h3>
+                    <p>Find compatible donors in under 15 minutes</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>100% Safe</h3>
+                    <p>Rigorous donor screening and testing</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>24/7 Availability</h3>
+                    <p>Emergency services anytime, anywhere</p>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background: #f8f8f8;
+        /* === About Us Section Styles === */
+        .about-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(to right, #fff 0%, #fef6f6 100%);
         }
-
-        header {
-            background: red;
-            color: white;
-            padding: 20px;
-            font-size: 24px;
+        
+        .about-container {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-
-        .container {
-            padding: 20px;
+        
+        .about-content {
+            flex: 1;
         }
-
-        .section {
-            margin: 20px auto;
-            padding: 20px;
-            width: 80%;
-            border-radius: 10px;
-            box-shadow: 0 0 10px gray;
+        
+        .about-content h2 {
+            font-size: 2.5rem;
+            color: #d10000;
+            margin-bottom: 0.5rem;
+        }
+        
+        .about-content h2 span {
+            font-weight: 700;
+        }
+        
+        .tagline {
+            color: #555;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .about-content p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        
+        .features-box {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            flex: 1;
             background: white;
-        }
-
-        .qr-section img,
-        .section img {
-            width: 100%;
+            padding: 1.5rem;
             border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(209, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            border-top: 3px solid #d10000;
         }
-
-        .btn {
-            background: red;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 16px;
-            border-radius: 5px;
+        
+        .feature:hover {
+            transform: translateY(-5px);
         }
-
-        .btn:hover {
-            background: darkred;
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(209, 0, 0, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-icon i {
+            color: #d10000;
+            font-size: 1.2rem;
+        }
+        
+        .feature h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature p {
+            color: #777;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .about-image {
+            flex: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(209, 0, 0, 0.1);
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .about-image:hover img {
+            transform: scale(1.03);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .about-container {
+                flex-direction: column;
+            }
+            
+            .features-box {
+                flex-direction: column;
+            }
+            
+            .about-image {
+                order: -1;
+                margin-bottom: 2rem;
+            }
         }
     </style>
-</head>
+</section>
+  <!-- === Our Team Section === -->
+<section class="team-section">
+    <div class="team-container">
+        <h2 class="section-title">Our <span>Team</span></h2>
+        <p class="section-subtitle">Meet the passionate minds behind our mission</p>
+        
+        <div class="team-grid">
+            <!-- Team Member 1 -->
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="Images/rabin.jpg" alt="Member 1">
+                </div>
+                <div class="member-info">
+                    <h3>Rabin Chuwan</h3>
+                    <p>Student</p>
+                    <div class="social-links">
+                        <a href="#"><i class="https://www.linkedin.com/in/rabin-chuwan-7b7559260/"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
 
-<body>
-    <header>Blood Bank Management System</header>
-
-    <div class="container">
-        <!-- Donor Registration Section -->
-        <div class="section">
-            <h2>Donor Registration</h2>
-            <img src="donor.jpg" alt="Donor Registration">
-            <p>Register as a blood donor and help save lives.</p>
-            <a href="register.php"><button class="btn">Register Now</button></a>
-        </div>
-
-        <!-- Find Blood Section -->
-        <div class="section">
-            <h2>Find Blood</h2>
-            <img src="find-blood.jpg" alt="Find Blood">
-            <p>Search for available blood donors near you.</p>
-            <a href="search.php"><button class="btn">Search Now</button></a>
-        </div>
-
-        <!-- QR Code Section -->
-        <div class="section qr-section">
-            <h2>Scan QR to Register or Request</h2>
-            <img src="qr-code.png" alt="QR Code">
-            <p>Use this QR code to register as a donor or request blood instantly.</p>
-        </div>
-
-        <!-- Login Section -->
-        <div class="section">
-            <h2>Login</h2>
-            <img src="login.jpg" alt="Login">
-            <p>Login to access your donor dashboard.</p>
-            <a href="login.php"><button class="btn">Login Now</button></a>
+            <!-- Team Member 2 -->
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="Images/vasi.jpg" alt="Member 2">
+                </div>
+            <div class="member-info">
+                <h3>Sudip Bhasima</h3>
+                <p>Student</p>
+                <div class="social-links">
+                    <a href="#"><i class="https://www.linkedin.com/in/sudip-bhasima-47183b305/"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+                </div>
+            </div>
         </div>
     </div>
-</body>
 
+    <style>
+        /* === Our Team Section Styles === */
+        .team-section {
+            padding: 4rem 1rem;
+            background: #fef6f6; /* Light pink background */
+            text-align: center;
+        }
+        
+        .section-title {
+            font-size: 2.2rem;
+            color: #d10000;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-title span {
+            font-weight: 700;
+        }
+        
+        .section-subtitle {
+            color: #777;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .team-grid {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .team-member {
+            width: 300px;
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(209, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+        
+        .member-image {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #ffecec;
+            box-shadow: 0 3px 10px rgba(209, 0, 0, 0.1);
+        }
+        
+        .member-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .team-member:hover .member-image img {
+            transform: scale(1.1);
+        }
+        
+        .member-info h3 {
+            color: #333;
+            margin-bottom: 0.3rem;
+            font-size: 1.3rem;
+        }
+        
+        .member-info p {
+            color: #d10000;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            color: #777;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: #d10000;
+            transform: scale(1.2);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .team-grid {
+                flex-direction: column;
+                align-items: center;
+                gap: 2rem;
+            }
+            
+            .team-member {
+                width: 100%;
+                max-width: 350px;
+            }
+        }
+    </style>
+</section>
+    <!-- ==== Footer ==== -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> Bode Bhaktapur, Nepal</li>
+                    <li><i class="fas fa-phone"></i> 98989898989</li>
+                    <li><i class="fas fa-envelope"></i> blood@gmail.com</li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Donate Blood</a></li>
+                    <li><a href="#">Find Blood</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>&copy; 2025 BloodCare. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for "About Us" link
+        document.querySelector('a[href="#about-us"]').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.querySelector('#about-us').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
 </html>
