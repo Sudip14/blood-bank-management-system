@@ -108,10 +108,13 @@
                 <input type="password" name="password" placeholder="Password" required>
                 <button type="submit" class="btn">Login</button>
             </form>
-
             <div class="forgot-password">
-                <a href="forgot-password.html">Forgot Password?</a>
+                <a href="forgot-password.php">Forgot Password?</a>
             </div>
+        </div>
+        <div class="section" style="margin-top: 10px;">
+            <h2>Don't have an account?</h2>
+            <a href="register.php" class="btn">Register Now</a>
         </div>
     </div>
 
