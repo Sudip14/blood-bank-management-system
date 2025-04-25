@@ -21,8 +21,8 @@ include 'connection.php'; // Include your database connection here
                     <i class="fas fa-bars"></i>
                 </button>
                 <ul id="navMenu">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Donors</a></li>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#donors">Donors</a></li>
                     <li><a href="#">Blood Inventory</a></li>
                     <li><a href="search.php">Find Blood</a></li>
                     <li><a href="#about-us">About Us</a></li>
@@ -42,14 +42,76 @@ include 'connection.php'; // Include your database connection here
 
     <!-- ==== Main Content ==== -->
     <main>
-        <!-- Hero Section -->
+        <!-- Hero Section
         <div class="hero">
             <img src="Images/Bloodcare.webp" alt="Blood Donation" class="hero-image">
             <h1>Welcome to BloodCare</h1>
             <p>Your trusted blood bank management system.</p>
             <a href="search.php" class="cta-btn">Find a Donor</a>
-        </div>
+        </div> -->
 
+
+        <!-- === Home Section === -->
+<section id="home" class="home-section">
+    <div class="home-container">
+        <h2>Welcome to <span>BloodCare</span></h2>
+        <p>Our platform helps connect those in need of blood with lifesaving donors in real-time.</p>
+        <div class="home-boxes">
+            <div class="home-box">
+                <i class="fas fa-tint"></i>
+                <h3>Why Donate?</h3>
+                <p>Donating blood can save up to 3 lives with each donation.</p>
+            </div>
+            <div class="home-box">
+                <i class="fas fa-hospital"></i>
+                <h3>Trusted Network</h3>
+                <p>Hospitals and donors work together on a safe and verified platform.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- === Donor Section === -->
+        <section id="donors" class="donor-section">
+    <div class="donor-container">
+        <h2>Featured <span>Donors</span></h2>
+        <p>Here are a few of our active and verified blood donors.</p>
+        <div class="donor-grid">
+            <?php
+            // Connect to database
+            $conn = new mysqli("localhost", "root", "", "blood_bank");
+
+            // Check connection
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+
+            // Fetch 4 donors
+            $sql = "SELECT name, blood_group, location FROM doners LIMIT 4";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                // Output each donor
+                while ($row = $result->fetch_assoc()) {
+                    echo '<div class="donor-card">';
+                    echo '<h3>' . htmlspecialchars($row["name"]) . '</h3>';
+                    echo '<p><strong>Blood Group:</strong> ' . htmlspecialchars($row["blood_group"]) . '</p>';
+                    echo '<p><strong>Location:</strong> ' . htmlspecialchars($row["location"]) . '</p>';
+                    echo '</div>';
+                }
+            } else {
+                echo "<p>No donors found.</p>";
+            }
+
+            $conn->close();
+            ?>
+        </div>
+        <a href="register.php" class="cta-btn">Become a Donor</a>
+    </div>
+</section>
+
+
+        
       <!-- === About Us Section === -->
 <section id="about-us" class="about-section">
     <div class="about-container">
@@ -89,6 +151,93 @@ include 'connection.php'; // Include your database connection here
     </div>
 
     <style>
+
+        /* === home Styles === */
+        .home-section {
+    background-color: #fff0f0;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+.home-container h2 {
+    font-size: 2.2rem;
+    color: #d10000;
+}
+.home-container span {
+    font-weight: bold;
+}
+.home-boxes {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+.home-box {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(209, 0, 0, 0.05);
+    width: 280px;
+    transition: 0.3s;
+}
+.home-box:hover {
+    transform: translateY(-5px);
+}
+.home-box i {
+    font-size: 2rem;
+    color: #d10000;
+    margin-bottom: 0.5rem;
+}
+.home-box h3 {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+.home-box p {
+    color: #666;
+}
+
+    /* === donner Section Styles === */
+.donor-section {
+    background: #fff;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+.donor-container h2 {
+    font-size: 2.2rem;
+    color: #d10000;
+}
+.donor-container span {
+    font-weight: bold;
+}
+.donor-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+.donor-card {
+    background: #fef6f6;
+    border: 2px solid #ffdcdc;
+    border-radius: 10px;
+    padding: 1.5rem;
+    width: 250px;
+    box-shadow: 0 4px 10px rgba(209, 0, 0, 0.05);
+}
+.donor-card h3 {
+    color: #d10000;
+    margin-bottom: 0.5rem;
+}
+.donor-card p {
+    color: #555;
+    font-size: 0.95rem;
+}
+
+
+
+
+
+
         /* === About Us Section Styles === */
         .about-section {
             padding: 5rem 2rem;
