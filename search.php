@@ -9,62 +9,102 @@ include 'connection.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find Blood</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background: #f8f8f8;
-        }
+    <style><style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background: #f8f8f8;
+    }
 
-        header {
-            background: red;
-            color: white;
-            padding: 20px;
-            font-size: 24px;
-        }
+    header {
+        background: red;
+        color: white;
+        padding: 20px;
+        font-size: 24px;
+    }
 
-        .container {
-            padding: 20px;
-        }
+    .container {
+        padding: 20px;
+    }
 
-        .section {
-            margin: 20px auto;
-            padding: 20px;
-            width: 80%;
-            border-radius: 10px;
-            box-shadow: 0 0 10px gray;
-            background: white;
-        }
+    .section {
+        margin: 20px auto;
+        padding: 20px;
+        width: 80%;
+        border-radius: 10px;
+        box-shadow: 0 0 10px gray;
+        background: white;
+    }
 
-        .btn {
-            background: red;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-        }
+    .btn {
+        background: red;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+    }
 
-        .btn:hover {
-            background: darkred;
-        }
+    .btn:hover {
+        background: darkred;
+    }
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
 
-        .donor-results {
-            text-align: left;
-            margin-top: 20px;
-        }
+    .donor-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .donor {
+        background: #ffeaea;
+        border: 1px solid #ffcccc;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(255, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: transform 0.2s;
+    }
+
+    .donor:hover {
+        transform: scale(1.02);
+        background: #fff0f0;
+    }
+
+    .donor img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        border: 2px solid red;
+    }
+
+    .donor h3 {
+        margin: 0 0 10px 0;
+        color: red;
+    }
+
+    .donor p {
+        margin: 5px 0;
+        font-size: 15px;
+        text-align: center;
+    }
+</style>
+
     </style>
 </head>
 
