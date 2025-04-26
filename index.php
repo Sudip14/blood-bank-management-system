@@ -2,6 +2,7 @@
 include 'connection.php'; // Include your database connection here
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +24,7 @@ include 'connection.php'; // Include your database connection here
                 <ul id="navMenu">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#donors">Donors</a></li>
-                    <li><a href="#">Blood Inventory</a></li>
+                    <li><a href="blood_inventory.php">Blood Inventory</a></li>
                     <li><a href="search.php">Find Blood</a></li>
                     <li><a href="#about-us">About Us</a></li>
                     <li class="dropdown">
