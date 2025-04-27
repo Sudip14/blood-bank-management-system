@@ -7,6 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = htmlspecialchars(strip_tags(trim($_POST['name'])));
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $password = trim($_POST['password']);
+    $contact = $_POST['contact'];
     $blood_group = htmlspecialchars(strip_tags(trim($_POST['blood_group'])));
     $location = htmlspecialchars(strip_tags(trim($_POST['location'])));
     $gender = isset($_POST['gender']) ? $_POST['gender'] : null;  // Capture gender
@@ -49,8 +50,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
 
     // Insert new user
-    $stmt = $con->prepare("INSERT INTO `doners`(`name`, `age`, `gender`, `email`, `password`, `blood_group`, `location`) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sisssss", $name, $age, $gender, $email, $hashed_password, $blood_group, $location);
+    $stmt = $con->prepare("INSERT INTO `doners`(`name`, `age`, `gender`, `contact`, `email`, `password`, `blood_group`, `location`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sissssss", $name, $age, $gender, $contact, $email, $hashed_password, $blood_group, $location);
     
 
     if ($stmt->execute()) {

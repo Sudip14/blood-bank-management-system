@@ -93,16 +93,15 @@
 
             <form method="post" action="register_process.php">
                 <input type="text" name="name" placeholder="Full Name" required>
-                <input type="number" name="age" placeholder="Age" required>
+
+                <input type="number" name="age" placeholder="Age" required  pattern="\d{10}" min="18" max="60">
                 <div style="display: flex; gap: 10px; align-items: center;">
-    <label>Gender:</label>
-    <label><input type="radio" name="gender" value="Male" required> Male</label>
-    <label><input type="radio" name="gender" value="Female" required> Female</label>
-    <label><input type="radio" name="gender" value="Other" required> Other</label>
-</div>
-
-
-
+                    <label>Gender:</label>
+                    <label><input type="radio" name="gender" value="Male" required> Male</label>
+                    <label><input type="radio" name="gender" value="Female" required> Female</label>
+                    <label><input type="radio" name="gender" value="Other" required> Other</label>
+                </div>
+                <input type="text" name="contact" placeholder="Phone Number" required pattern="\d{10}">
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <input type="text" name="blood_group" placeholder="Blood Group (e.g., A+)" required>
