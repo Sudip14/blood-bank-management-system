@@ -85,25 +85,30 @@
             gap: 2rem;
             flex-wrap: wrap;
         }
-        .card {
+        .card-button {
             background: white;
             flex: 1;
             min-width: 250px;
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(209, 0, 0, 0.05);
-            transition: transform 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease, background 0.3s;
+            text-align: center;
         }
-        .card:hover {
+        .card-button:hover {
             transform: translateY(-5px);
+            background: #ffe5e5;
         }
-        .card h3 {
+        .card-button h3 {
             font-size: 1.5rem;
-            color: #333;
+            color: #d10000;
             margin-bottom: 1rem;
         }
-        .card p {
+        .card-button p {
             color: #666;
+            font-size: 1.1rem;
         }
 
         /* Footer */
@@ -146,8 +151,8 @@
         <ul>
             <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
             <li><a href="#"><i class="fas fa-user"></i> Manage Donors</a></li>
-            <li><a href="#"><i class="fas fa-tint"></i> Blood Inventory</a></li>
-            <li><a href="#"><i class="fas fa-search"></i> Find Requests</a></li>
+            <li><a href="blood_inventory.php"><i class="fas fa-tint"></i> Blood Inventory</a></li>
+            <li><a href="finds_requests.php"><i class="fas fa-search"></i> Find Requests</a></li>
             <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
             <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
@@ -165,22 +170,22 @@
 
         <!-- Cards Section -->
         <div class="cards">
-            <div class="card">
+            <a href="manage_donors.php" class="card-button">
                 <h3>Active Donors</h3>
                 <p>1200+ Registered</p>
-            </div>
-            <div class="card">
+            </a>
+            <a href="finds_requests.php" class="card-button">
                 <h3>Blood Requests</h3>
                 <p>45 Pending</p>
-            </div>
-            <div class="card">
+            </a>
+            <a href="blood_inventory.php" class="card-button">
                 <h3>Inventory</h3>
                 <p>500 Units Available</p>
-            </div>
-            <div class="card">
+            </a>
+            <a href="emergency_alerts.php" class="card-button">
                 <h3>Emergency Alerts</h3>
                 <p>3 New</p>
-            </div>
+            </a>
         </div>
     </div>
 
