@@ -205,7 +205,7 @@
                 <tbody>
                     <!-- Sample Data (Replace with PHP while fetching from database) -->
                     <tr>
-                        <td>John Doe</td>
+                        <td>e</td>
                         <td>O+</td>
                         <td>Kathmandu</td>
                         <td>+977-9876543210</td>
