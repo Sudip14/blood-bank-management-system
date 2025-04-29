@@ -1,3 +1,37 @@
+<?php
+include 'connection.php'; 
+
+$blood_group = isset($_POST['blood_group']) ? trim($_POST['blood_group']) : '';
+$city = isset($_POST['city']) ? trim($_POST['city']) : '';
+
+$query = "SELECT * FROM blood_requests WHERE 1=1";
+$params = [];
+$types = '';
+
+if (!empty($blood_group)) {
+    $query .= " AND blood_group = ?";
+    $params[] = $blood_group;
+    $types .= 's';
+}
+if (!empty($city)) {
+    $query .= " AND city LIKE ?";
+    $params[] = "%$city%";
+    $types .= 's';
+}
+
+$stmt = $con->prepare($query);
+
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+?>
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -169,23 +203,23 @@
 
         <!-- Search Section -->
         <div class="search-section">
-            <form action="" method="post">
-                <select name="blood_group">
-                    <option value="">Select Blood Group</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                </select>
+        <form action="" method="post">
+    <select name="blood_group">
+        <option value="">Select Blood Group</option>
+        <?php
+        $groups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+        foreach ($groups as $group) {
+            $selected = ($blood_group == $group) ? 'selected' : '';
+            echo "<option value=\"$group\" $selected>$group</option>";
+        }
+        ?>
+    </select>
 
-                <input type="text" name="city" placeholder="Enter City">
+    <input type="text" name="city" placeholder="Enter City" value="<?= htmlspecialchars($city) ?>">
 
-                <button type="submit">Search</button>
-            </form>
+    <button type="submit">Search</button>
+</form>
+
         </div>
 
         <!-- Results Section -->
@@ -202,24 +236,25 @@
                         <th>Request Date</th>
                     </tr>
                 </thead>
-                <tbody>
                     <!-- Sample Data (Replace with PHP while fetching from database) -->
-                    <tr>
-                        <td>e</td>
-                        <td>O+</td>
-                        <td>Kathmandu</td>
-                        <td>+977-9876543210</td>
-                        <td>2025-04-28</td>
-                    </tr>
-                    <tr>
-                        <td>Jane Smith</td>
-                        <td>A-</td>
-                        <td>Pokhara</td>
-                        <td>+977-9801234567</td>
-                        <td>2025-04-27</td>
-                    </tr>
-                </tbody>
-            </table>
+                    <tbody>
+    <?php if (mysqli_num_rows($result) > 0): ?>
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <tr>
+                <td><?= htmlspecialchars($row['name']) ?></td>
+                <td><?= htmlspecialchars($row['blood_group']) ?></td>
+                <td><?= htmlspecialchars($row['city']) ?></td>
+                <td><?= htmlspecialchars($row['contact']) ?></td>
+                <td><?= htmlspecialchars($row['request_date']) ?></td>
+            </tr>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="5">No requests found.</td>
+        </tr>
+    <?php endif; ?>
+</tbody>
+     </table>
         </div>
     </div>
 
