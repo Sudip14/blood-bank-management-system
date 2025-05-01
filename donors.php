@@ -14,8 +14,8 @@ include 'connection.php';?>
 <!-- === Donor Section === -->
 <section id="donors" class="donor-section">
 <div class="donor-container">
-<h2>Featured <span>Donors</span></h2>
-<p>Here are a few of our active and verified blood donors.</p>
+<h2> <span>Donors</span></h2>
+
 <div class="donor-grid">
     <?php
     // Connect to database
@@ -27,7 +27,7 @@ include 'connection.php';?>
     }
 
     // Fetch 4 donors
-    $sql = "SELECT name, blood_group, location FROM doners LIMIT 4";
+    $sql = "SELECT name, blood_group, age, contact, location FROM doners LIMIT 4";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -36,6 +36,8 @@ include 'connection.php';?>
             echo '<div class="donor-card">';
             echo '<h3>' . htmlspecialchars($row["name"]) . '</h3>';
             echo '<p><strong>Blood Group:</strong> ' . htmlspecialchars($row["blood_group"]) . '</p>';
+            echo '<p><strong>Age:</strong> ' . htmlspecialchars($row["age"]) . '</p>';
+            echo '<p><strong>Contact:</strong> ' . htmlspecialchars($row["contact"]) . '</p>';
             echo '<p><strong>Location:</strong> ' . htmlspecialchars($row["location"]) . '</p>';
             echo '</div>';
         }
@@ -46,8 +48,50 @@ include 'connection.php';?>
     $conn->close();
     ?>
 </div>
-<a href="register.php" class="cta-btn">Become a Donor</a>
 </div>
+<style>
+    .donor-section {
+    background: #fff;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+.donor-container h2 {
+    font-size: 2.2rem;
+    color: #d10000;
+}
+.donor-container span {
+    font-weight: bold;
+}
+.donor-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+.donor-card {
+    background: #fef6f6;
+    border: 2px solid #ffdcdc;
+    border-radius: 10px;
+    padding: 1.5rem;
+    width: 250px;
+    box-shadow: 0 4px 10px rgba(209, 0, 0, 0.05);
+}
+.donor-card h3 {
+    color: #d10000;
+    margin-bottom: 0.5rem;
+}
+.donor-card p {
+    color: #555;
+    font-size: 0.95rem;
+}
+
+
+
+
+
+
+    </style>
 </section>
 
 </body>
