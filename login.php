@@ -1,4 +1,12 @@
 <?php include 'connection.php'; ?>
+<?php
+session_start();
+if (isset($_SESSION['error'])) {
+    echo "<p style='color:red; font-weight:bold; text-align:center;'>" . $_SESSION['error'] . "</p>";
+    unset($_SESSION['error']);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -88,20 +96,6 @@
         <div class="section">
             <h2>Login to Your Account</h2>
 
-            <?php
-            if (isset($_GET['error'])) {
-                if ($_GET['error'] == "InvalidPassword") {
-                    echo "<div style='color: red; font-weight: bold;'>Incorrect password. Please try again.</div>";
-                } elseif ($_GET['error'] == "UserNotFound") {
-                    echo "<div style='color: red; font-weight: bold;'>User not found. Please register first.</div>";
-                }
-            }
-
-            if (isset($_GET['login']) && $_GET['login'] == "success") {
-                echo "<div style='color: green; font-weight: bold;'>Login successful! Redirecting...</div>";
-                echo "<script>setTimeout(() => { window.location.href='dashboard.php'; }, 2000);</script>";
-            }
-            ?>
 
             <form action="login_process.php" method="POST">
                 <input type="email" name="email" placeholder="Email" required>

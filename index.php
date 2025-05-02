@@ -1,8 +1,7 @@
 <?php
-include 'connection.php'; // Include your database connection here
+session_start();
+include 'connection.php'; // Include your database connection
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,34 +10,139 @@ include 'connection.php'; // Include your database connection here
     <title>Blood Bank Management System</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 10px 0;
+            list-style: none;
+            margin: 0;
+            top: 100%;
+            right: 0;
+            min-width: 150px;
+            z-index: 1000;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content li a {
+            display: block;
+            padding: 8px 15px;
+            color: black;
+            text-decoration: none;
+        }
+
+        .dropdown-content li a:hover {
+            background-color: #f2f2f2;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info img {
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            #navMenu {
+                display: none;
+                flex-direction: column;
+                background: white;
+                position: absolute;
+                top: 60px;
+                right: 0;
+                width: 200px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            }
+
+            #navMenu.show {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: black;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- ==== Header (Navigation Bar) ==== -->
-    <header>
-        <div class="header-container">
-            <div class="logo">Blood<span>Care</span></div>
-            <nav>
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <ul id="navMenu">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#donors">Donors</a></li>
-                    <li><a href="user_inventory.php">Blood Inventory</a></li>
-                    <li><a href="search.php">Find Donors</a></li>
-                    <li><a href="#about-us">About Us</a></li>
-                    <li class="dropdown">
-                        <a href="login.php">Login</a>
+
+<!-- ==== Header (Navigation Bar) ==== -->
+<header>
+    <div class="header-container">
+        <div class="logo">Blood<span>Care</span></div>
+        <nav>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul id="navMenu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#donors">Donors</a></li>
+                <li><a href="user_inventory.php">Blood Inventory</a></li>
+                <li><a href="search.php">Find Donors</a></li>
+                <li><a href="#about-us">About Us</a></li>
+                <li class="dropdown">
+                    <?php if (!isset($_SESSION['user_id'])): ?>
+                        <a href="#">Login <i class="fa-duotone fa-solid fa-user"></i></a>
                         <ul class="dropdown-content">
-                            <li><a href="login.php">Admin Login</a></li>
+                            <li><a href="admin_login.php">Admin Login</a></li>
                             <li><a href="login.php">User Login</a></li>
                         </ul>
-                    </li>
-    
+                    <?php else: ?>
+                        <a href="#">
+                            <div class="user-info">
+                                <!-- <img src="user_icon.png" alt="User" style="width: 24px; height: 24px;"> -->
+                                <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                                <i class="fa-duotone fa-solid fa-user"></i>
+                           </div>
+                        </a>
+                        <ul class="dropdown-content">
+                            <li><a href="update.php">Update</a></li>
+                            <li><a href="user_logout.php">Logout</a></li>
+                        </ul>
+                    <?php endif; ?>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
 
-                </ul>
-            </nav>
-        </div>
+<!-- JS for mobile toggle -->
+<script>
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+        const navMenu = document.getElementById('navMenu');
+        navMenu.classList.toggle('show');
+    });
+</script>
+
+</header>
+
+<!-- Optional JS to enhance dropdown toggle -->
+<script>
+    const dropdown = document.querySelector('.dropdown');
+    const dropdownContent = dropdown.querySelector('.dropdown-content');
+
+    dropdown.addEventListener('mouseenter', () => {
+        dropdownContent.style.display = 'block';
+    });
+
+    dropdown.addEventListener('mouseleave', () => {
+        dropdownContent.style.display = 'none';
+    });
+</script>
+
     </header>
 
     <!-- ==== Main Content ==== -->
@@ -234,7 +338,16 @@ include 'connection.php'; // Include your database connection here
     font-size: 0.95rem;
 }
 
+   /* === user logout css === */
+   .user-info {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
 
+.user-info:hover .dropdown-content {
+    display: block;
+}
 
 
 

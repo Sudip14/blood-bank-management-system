@@ -30,8 +30,6 @@ $result = $stmt->get_result();
 ?>
 
 
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -245,8 +243,8 @@ $result = $stmt->get_result();
                 <td><?= htmlspecialchars($row['blood_group']) ?></td>
                 <td><?= htmlspecialchars($row['city']) ?></td>
                 <td><?= htmlspecialchars($row['contact']) ?></td>
-                <td><?= htmlspecialchars($row['request_date']) ?></td>
-            </tr>
+                <td><?= htmlspecialchars($row['request_time']) ?></td>
+                </tr>
         <?php endwhile; ?>
     <?php else: ?>
         <tr>
