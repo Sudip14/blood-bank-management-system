@@ -1,4 +1,11 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_name'])) {
+    // If the user is not logged in, redirect to login page
+    header("Location: login.php");
+    exit;
+    
+}
 include 'connection.php';
 ?>
 
@@ -9,7 +16,7 @@ include 'connection.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find Blood</title>
-    <style><style>
+    <style>
     body {
         font-family: Arial, sans-serif;
         text-align: center;
