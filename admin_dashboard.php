@@ -96,12 +96,16 @@ if (isset($_SESSION['admin_id'])) {
             gap: 10px;
             color: #333;
         }
-        .admin-profile img {
+        /* .admin-profile img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
-        }
+        } */
+        span a:hover {
+    color: red;
+}
+
 
         /* Cards Section */
         .cards {
@@ -177,7 +181,7 @@ if (isset($_SESSION['admin_id'])) {
             <li><a href="manage_donors.php"><i class="fas fa-tachometer-alt"></i> Manage Donors</a></li>
             <li><a href="blood_inventory.php"><i class="fas fa-tint"></i> Blood Inventory</a></li>
             <li><a href="finds_requests.php"><i class="fas fa-search"></i> Find Requests</a></li>
-            <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="admin_update.php"><i class="fas fa-cog"></i> Settings</a></li>
             <li><a href="admin_logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
@@ -188,7 +192,12 @@ if (isset($_SESSION['admin_id'])) {
             <h1>Dashboard</h1>
             <div class="admin-profile">
                 <!-- <img src="admin_profile.jpg" alt="Admin Profile Picture"> -->
-                <span><?php echo htmlspecialchars($users['username']); ?></span>
+                <span>
+    <a href="admin_update.php" style="text-decoration: none; color: #333;">
+        <i class="fa-solid fa-user" style="margin-right: 5px;"></i>
+        <?php echo htmlspecialchars($users['username']); ?>
+    </a>
+</span>
                 </div>
         </div>
 
