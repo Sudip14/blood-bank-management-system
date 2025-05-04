@@ -99,11 +99,6 @@
                 <button type="submit" name="submit" class="btn">Register Admin</button>
             </form>
         </div>
-
-        <div class="section" style="margin-top: 10px;">
-            <h2>Already an Admin?</h2>
-            <a href="admin_login.php" class="btn">Login Here</a>
-        </div>
     </div>
 </body>
 </html>
