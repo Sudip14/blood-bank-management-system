@@ -37,21 +37,158 @@ $inventory = $con->query("SELECT * FROM inventory");
 <head>
     <meta charset="UTF-8">
     <title>Blood Inventory Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background: #f8f8f8; text-align: center; margin: 0; }
-        h1 { background: red; color: white; padding: 20px; }
-        table { width: 80%; margin: 20px auto; border-collapse: collapse; background: white; box-shadow: 0 0 10px gray; }
-        th, td { padding: 12px; border: 1px solid #ccc; }
-        th { background: red; color: white; }
-        tr.low-stock { background: #ffe6e6; }
-        form { margin: 20px auto; width: 300px; }
-        input, select, button { padding: 10px; margin: 10px 0; width: 100%; border-radius: 5px; border: 1px solid #ccc; }
-        button { background: red; color: white; border: none; cursor: pointer; }
-        button:hover { background: darkred; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: #f8f8f8;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #d10000;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding-top: 2rem;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            padding: 15px 20px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            font-size: 1.1rem;
+        }
+
+        .sidebar ul li:hover,
+        .sidebar ul li.active {
+            background: #a50000;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px);
+        }
+
+        h1 {
+            background: red;
+            color: white;
+            padding: 20px;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px gray;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background: red;
+            color: white;
+        }
+
+        tr.low-stock {
+            background: #ffe6e6;
+        }
+
+        form {
+            margin: 30px auto;
+            max-width: 400px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkred;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>BloodCare Admin</h2>
+    <ul>
+        <li><a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="#"><i class="fas fa-user"></i> Manage Donors</a></li>
+        <li class="active"><a href="blood_inventory.php"><i class="fas fa-tint"></i> Blood Inventory</a></li>
+        <li><a href="find_requests.php"><i class="fas fa-search"></i> Find Requests</a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+        <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
     <h1>Blood Bank Inventory Dashboard</h1>
 
     <table>
@@ -62,8 +199,8 @@ $inventory = $con->query("SELECT * FROM inventory");
 
         <?php while($row = $inventory->fetch_assoc()): ?>
             <tr class="<?= ($row['units_available'] < 5) ? 'low-stock' : '' ?>">
-                <td><?= $row['blood_group'] ?></td>
-                <td><?= $row['units_available'] ?></td>
+                <td><?= htmlspecialchars($row['blood_group']) ?></td>
+                <td><?= htmlspecialchars($row['units_available']) ?></td>
             </tr>
         <?php endwhile; ?>
     </table>
@@ -73,20 +210,18 @@ $inventory = $con->query("SELECT * FROM inventory");
     <form method="post">
         <select name="blood_group" required>
             <option value="">Select Blood Group</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
+            <?php
+            $groups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+            foreach ($groups as $group) {
+                echo "<option value=\"$group\">$group</option>";
+            }
+            ?>
         </select>
         <input type="number" name="units" placeholder="Units" min="1" required>
-
         <button type="submit" name="add_units">➕ Add Units</button>
         <button type="submit" name="remove_units">➖ Remove Units</button>
     </form>
+</div>
 
 </body>
 </html>
