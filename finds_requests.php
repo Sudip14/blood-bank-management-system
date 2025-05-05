@@ -1,5 +1,5 @@
 <?php
-include 'connection.php'; 
+include 'connection.php';
 
 $blood_group = isset($_POST['blood_group']) ? trim($_POST['blood_group']) : '';
 $city = isset($_POST['city']) ? trim($_POST['city']) : '';
@@ -28,7 +28,6 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -176,7 +175,8 @@ $result = $stmt->get_result();
                 margin-left: 0;
             }
         }
-    </style>
+
+</style>
 </head>
 
 <body>
@@ -201,23 +201,21 @@ $result = $stmt->get_result();
 
         <!-- Search Section -->
         <div class="search-section">
-        <form action="" method="post">
-    <select name="blood_group">
-        <option value="">Select Blood Group</option>
-        <?php
-        $groups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
-        foreach ($groups as $group) {
-            $selected = ($blood_group == $group) ? 'selected' : '';
-            echo "<option value=\"$group\" $selected>$group</option>";
-        }
-        ?>
-    </select>
+            <form action="" method="post">
+                <select name="blood_group">
+                    <option value="">Select Blood Group</option>
+                    <?php
+                    $groups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+                    foreach ($groups as $group) {
+                        $selected = ($blood_group == $group) ? 'selected' : '';
+                        echo "<option value=\"$group\" $selected>$group</option>";
+                    }
+                    ?>
+                </select>
 
-    <input type="text" name="city" placeholder="Enter City" value="<?= htmlspecialchars($city) ?>">
-
-    <button type="submit">Search</button>
-</form>
-
+                <input type="text" name="city" placeholder="Enter City" value="<?= htmlspecialchars($city) ?>">
+                <button type="submit">Search</button>
+            </form>
         </div>
 
         <!-- Results Section -->
@@ -231,28 +229,43 @@ $result = $stmt->get_result();
                         <th>Blood Group</th>
                         <th>City</th>
                         <th>Contact</th>
+                        <th>email</th>
                         <th>Request Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
-                    <!-- Sample Data (Replace with PHP while fetching from database) -->
-                    <tbody>
-    <?php if (mysqli_num_rows($result) > 0): ?>
-        <?php while ($row = mysqli_fetch_assoc($result)): ?>
-            <tr>
-                <td><?= htmlspecialchars($row['name']) ?></td>
-                <td><?= htmlspecialchars($row['blood_group']) ?></td>
-                <td><?= htmlspecialchars($row['city']) ?></td>
-                <td><?= htmlspecialchars($row['contact']) ?></td>
-                <td><?= htmlspecialchars($row['request_time']) ?></td>
-                </tr>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="5">No requests found.</td>
-        </tr>
-    <?php endif; ?>
-</tbody>
-     </table>
+                <tbody>
+                    <?php if (mysqli_num_rows($result) > 0): ?>
+                        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['name']) ?></td>
+                                <td><?= htmlspecialchars($row['blood_group']) ?></td>
+                                <td><?= htmlspecialchars($row['city']) ?></td>
+                                <td><?= htmlspecialchars($row['contact']) ?></td>
+                                <td><?= htmlspecialchars($row['user_email']) ?></td>
+                                <td><?= htmlspecialchars($row['request_time']) ?></td>
+                                <td><?= htmlspecialchars($row['status']) ?></td>
+                                <td>
+                                    <form action="update_status.php" method="post">
+                                        <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
+                                        <select name="status">
+                                            <option value="Pending" <?= $row['status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
+                                            <option value="Approved" <?= $row['status'] == 'Approved' ? 'selected' : '' ?>>Approved</option>
+                                            <option value="Rejected" <?= $row['status'] == 'Rejected' ? 'selected' : '' ?>>Rejected</option>
+                                        </select>
+                                        <button type="submit">Update Status</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7">No requests found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
