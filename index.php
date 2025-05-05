@@ -90,9 +90,11 @@ include 'connection.php'; // Include your database connection
             <ul id="navMenu">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#donors">Donors</a></li>
-                <li><a href="user_inventory.php">Blood Inventory</a></li>
+                <li><a href="user_inventory.php">Request Blood</a></li>
                 <li><a href="search.php">Find Donors</a></li>
                 <li><a href="#about-us">About Us</a></li>
+                <li><a href="my_requests.php">View My Requests</a>
+                </li>
                 <li class="dropdown">
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <a href="#">Login <i class="fa-duotone fa-solid fa-user"></i></a>
@@ -109,7 +111,8 @@ include 'connection.php'; // Include your database connection
                            </div>
                         </a>
                         <ul class="dropdown-content">
-                            <li><a href="update.php">Update</a></li>
+                            
+                            <li><a href="user_profile_update.php">Update Profile</a></li>
                             <li><a href="user_logout.php">Logout</a></li>
                         </ul>
                     <?php endif; ?>
