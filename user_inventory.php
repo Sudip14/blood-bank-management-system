@@ -1,4 +1,15 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_name'])) {
+    // If the user is not logged in, redirect to login page
+    header("Location: login.php");
+    exit;
+    
+}
+// Assuming user details are stored in session variables
+$user_email = $_SESSION['user_email'] ?? null;
+$user_id = $_SESSION['user_id'] ?? null;
+
 include 'connection.php';
 
 // Initialize variables
@@ -23,8 +34,12 @@ if (isset($_POST['request_blood'])) {
             $row = $result->fetch_assoc();
             if ($row['units_available'] >= $requested_units) {
                 // Insert into blood_requests table
-                $stmt = $con->prepare("INSERT INTO blood_requests (blood_group, units_requested) VALUES (?, ?)");
-                $stmt->bind_param("si", $requested_blood_group, $requested_units);
+                $name = $_SESSION['user_name'] ?? '';
+                $contact = $_SESSION['user_contact'] ?? '';
+                $city = $_SESSION['user_location'] ?? '';
+
+                $stmt = $con->prepare("INSERT INTO blood_requests (name, blood_group, city, contact, request_time, user_email, user_id) VALUES (?, ?, ?, ?, NOW(), ?, ?)");
+                $stmt->bind_param("sssssi", $name, $requested_blood_group, $city, $contact, $user_email, $user_id);
                 $stmt->execute();
 
                 // Update inventory
@@ -60,6 +75,7 @@ if (isset($_POST['search'])) {
 <head>
     <meta charset="UTF-8">
     <title>Blood Bank Inventory</title>
+    
     <style>
         body { font-family: Arial, sans-serif; background: #f8f8f8; text-align: center; margin: 0; }
         h1 { background: red; color: white; padding: 20px; }
@@ -90,15 +106,15 @@ if (isset($_POST['search'])) {
 
     <!-- Blood Request Form -->
     <form method="post">
-    <select name="blood_group" required>
-    <option value="">Select Blood Group</option>
-    <?php
-    $bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
-    foreach ($bloodGroups as $group) {
-        echo "<option value=\"$group\">$group</option>";
-    }
-    ?>
-</select>
+        <select name="blood_group" required>
+            <option value="">Select Blood Group</option>
+            <?php
+            $bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+            foreach ($bloodGroups as $group) {
+                echo "<option value=\"$group\">$group</option>";
+            }
+            ?>
+        </select>
 
         <input type="number" name="units" placeholder="Enter Units" min="1" required>
         <button type="submit" name="request_blood">🩸 Request Blood</button>
@@ -106,37 +122,36 @@ if (isset($_POST['search'])) {
 
     <!-- Inventory Table -->
     <table>
-    <tr>
-        <th>Blood Group</th>
-        <th>Units Available</th>
-        <th>Action</th>
-    </tr>
-
-    <?php if ($inventory->num_rows > 0): ?>
-        <?php while($row = $inventory->fetch_assoc()): ?>
-            <tr class="<?= ($row['units_available'] < 5) ? 'low-stock' : '' ?>">
-                <td><?= $row['blood_group'] ?></td>
-                <td><?= $row['units_available'] ?></td>
-                <td>
-                    <?php if ($row['units_available'] > 0): ?>
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="blood_group" value="<?= $row['blood_group'] ?>">
-                            <input type="hidden" name="units" value="1">
-                            <button type="submit" name="request_blood">🩸 Request</button>
-                        </form>
-                    <?php else: ?>
-                        <span style="color:red;">Out of Stock</span>
-                    <?php endif; ?>
-                </td>
-            </tr>
-        <?php endwhile; ?>
-    <?php else: ?>
         <tr>
-            <td colspan="3">No results found.</td>
+            <th>Blood Group</th>
+            <th>Units Available</th>
+            <th>Action</th>
         </tr>
-    <?php endif; ?>
-</table>
 
+        <?php if ($inventory->num_rows > 0): ?>
+            <?php while($row = $inventory->fetch_assoc()): ?>
+                <tr class="<?= ($row['units_available'] < 5) ? 'low-stock' : '' ?>">
+                    <td><?= $row['blood_group'] ?></td>
+                    <td><?= $row['units_available'] ?></td>
+                    <td>
+                        <?php if ($row['units_available'] > 0): ?>
+                            <form method="post" style="display:inline;">
+                                <input type="hidden" name="blood_group" value="<?= $row['blood_group'] ?>">
+                                <input type="hidden" name="units" value="1">
+                                <button type="submit" name="request_blood">🩸 Request</button>
+                            </form>
+                        <?php else: ?>
+                            <span style="color:red;">Out of Stock</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="3">No results found.</td>
+            </tr>
+        <?php endif; ?>
+    </table>
 
 </body>
 </html>
