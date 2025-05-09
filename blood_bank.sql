@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2025 at 07:23 PM
+-- Generation Time: May 09, 2025 at 05:23 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -53,7 +53,8 @@ INSERT INTO `blood_requests` (`id`, `blood_group`, `units_requested`, `user_id`,
 (21, 'A+', NULL, 18, 'sudeep bhasima', 'bhaktapur', '9866443376', '2025-05-02 16:40:42', 'pending', 'bhasimasudeep05@gmail.com'),
 (22, 'A+', NULL, 18, 'sudeep bhasima', 'bhaktapur', '9866443376', '2025-05-02 16:52:23', 'pending', 'bhasimasudeep05@gmail.com'),
 (23, 'A+', NULL, 18, 'sudeep bhasima', 'bhaktapur', '9866443376', '2025-05-02 16:52:42', 'pending', 'bhasimasudeep05@gmail.com'),
-(24, 'AB+', NULL, 17, 'sudeep', 'bkt', '9866443370', '2025-05-02 17:21:32', 'pending', 'prazr23@gmail.com');
+(24, 'AB+', NULL, 17, 'sudeep', 'bkt', '9866443370', '2025-05-02 17:21:32', 'pending', 'prazr23@gmail.com'),
+(25, 'AB+', NULL, 18, 'sudeep bhasima', 'bhaktapur', '9866443376', '2025-05-05 01:30:09', 'pending', 'bhasimasudeep05@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -78,7 +79,7 @@ CREATE TABLE `doners` (
 --
 
 INSERT INTO `doners` (`id`, `name`, `Age`, `Gender`, `contact`, `email`, `password`, `blood_group`, `location`) VALUES
-(17, 'sudeep', 19, 'Male', '9866443370', 'prazr23@gmail.com', '$2y$10$aWHg83UlpzDnKnmSiM1AkuLVJv5buHDwcZZqNOftsJ9VOMpE/e9DS', 'b+', 'bkt'),
+(17, 'sudeep bhasima', 19, 'Male', '9866443370', 'prazr23@gmail.com', '$2y$10$aWHg83UlpzDnKnmSiM1AkuLVJv5buHDwcZZqNOftsJ9VOMpE/e9DS', 'A+', 'bkt'),
 (18, 'sudeep bhasima', 23, 'Male', '9866443376', 'bhasimasudeep05@gmail.com', '$2y$10$EpimP.8IJwgCvl/FpIDouOxIIOPhD2FZ6AHKnUTcAEnrFwvkSWb0m', 'b+', 'bhaktapur');
 
 -- --------------------------------------------------------
@@ -101,13 +102,13 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `blood_group`, `units_available`, `name`, `city`, `contact`) VALUES
-(1, 'A+', 0, NULL, NULL, NULL),
+(1, 'A+', 8, NULL, NULL, NULL),
 (2, 'A-', 0, NULL, NULL, NULL),
 (3, 'B+', 0, NULL, NULL, NULL),
 (4, 'B-', 0, NULL, NULL, NULL),
 (5, 'O+', 0, NULL, NULL, NULL),
 (6, 'O-', 0, NULL, NULL, NULL),
-(7, 'AB+', 15, NULL, NULL, NULL),
+(7, 'AB+', 14, NULL, NULL, NULL),
 (8, 'AB-', 0, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -133,7 +134,8 @@ INSERT INTO `inventory_log` (`id`, `blood_group`, `change_type`, `units_changed`
 (2, 'B-', 'add', 12, '2025-04-27 15:09:12'),
 (3, 'A+', 'remove', 9, '2025-04-29 15:41:51'),
 (4, 'A+', 'add', 20, '2025-05-02 13:11:46'),
-(5, 'AB+', 'add', 16, '2025-05-02 17:14:09');
+(5, 'AB+', 'add', 16, '2025-05-02 17:14:09'),
+(6, 'A+', 'add', 8, '2025-05-05 01:32:47');
 
 -- --------------------------------------------------------
 
@@ -204,7 +206,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `blood_requests`
 --
 ALTER TABLE `blood_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `doners`
@@ -222,7 +224,7 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `inventory_log`
 --
 ALTER TABLE `inventory_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
