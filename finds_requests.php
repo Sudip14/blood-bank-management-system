@@ -185,11 +185,12 @@ $result = $stmt->get_result();
         <h2>BloodCare Admin</h2>
         <ul>
             <li><a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="#"><i class="fas fa-user"></i> Manage Donors</a></li>
+            <li><a href="manage_donors.php"><i class="fas fa-user"></i> Manage Donors</a></li>
             <li><a href="blood_inventory.php"><i class="fas fa-tint"></i> Blood Inventory</a></li>
             <li class="active"><a href="find_requests.php"><i class="fas fa-search"></i> Find Requests</a></li>
-            <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="admin_update.php"><i class="fas fa-cog"></i> Settings</a></li>
+             <li><a href="admin_register.php"> <i class="fa-solid fa-user">+</i>Add New Admin</a></li>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
 
@@ -227,6 +228,7 @@ $result = $stmt->get_result();
                     <tr>
                         <th>Name</th>
                         <th>Blood Group</th>
+                        <th>Units Requested</th>
                         <th>City</th>
                         <th>Contact</th>
                         <th>email</th>
@@ -241,6 +243,7 @@ $result = $stmt->get_result();
                             <tr>
                                 <td><?= htmlspecialchars($row['name']) ?></td>
                                 <td><?= htmlspecialchars($row['blood_group']) ?></td>
+                                <td><?= htmlspecialchars($row['units_requested']) ?></td>   
                                 <td><?= htmlspecialchars($row['city']) ?></td>
                                 <td><?= htmlspecialchars($row['contact']) ?></td>
                                 <td><?= htmlspecialchars($row['user_email']) ?></td>

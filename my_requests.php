@@ -34,6 +34,7 @@ $result = $stmt->get_result();
 <table>
     <tr>
         <th>Blood Group</th>
+        <th>Units Requested</th>
         <th>City</th>
         <th>Contact</th>
         <th>Date</th>
@@ -42,6 +43,7 @@ $result = $stmt->get_result();
     <?php while ($row = $result->fetch_assoc()): ?>
         <tr>
             <td><?= htmlspecialchars($row['blood_group']) ?></td>
+            <td><?= htmlspecialchars($row['units_requested']) ?></td>
             <td><?= htmlspecialchars($row['city']) ?></td>
             <td><?= htmlspecialchars($row['contact']) ?></td>
             <td><?= htmlspecialchars($row['request_time']) ?></td>

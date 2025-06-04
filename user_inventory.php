@@ -38,8 +38,8 @@ if (isset($_POST['request_blood'])) {
                 $contact = $_SESSION['user_contact'] ?? '';
                 $city = $_SESSION['user_location'] ?? '';
 
-                $stmt = $con->prepare("INSERT INTO blood_requests (name, blood_group, city, contact, request_time, user_email, user_id) VALUES (?, ?, ?, ?, NOW(), ?, ?)");
-                $stmt->bind_param("sssssi", $name, $requested_blood_group, $city, $contact, $user_email, $user_id);
+                $stmt = $con->prepare("INSERT INTO blood_requests (name, blood_group, units_requested, city, contact, request_time, user_email, user_id) VALUES (?, ?, ?, ?, ?, NOW(), ?, ?)");
+                $stmt->bind_param("ssssssi", $name, $requested_blood_group, $requested_units, $city, $contact, $user_email, $user_id);
                 $stmt->execute();
 
                 // Update inventory
