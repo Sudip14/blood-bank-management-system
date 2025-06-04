@@ -141,7 +141,7 @@ include 'connection.php';
                     } else {
                         // If no location provided, sort by name only
                         $stmt = $con->prepare("
-                            SELECT name, blood_group, contact, location
+                            SELECT name, blood_group, contact, location, status
                             FROM doners
                             WHERE blood_group = ?
                             ORDER BY name ASC
@@ -159,6 +159,7 @@ include 'connection.php';
                                     <p>Blood Group: {$row['blood_group']}</p>
                                     <p>Contact: {$row['contact']}</p>
                                     <p>Location: {$row['location']}</p>
+                                    <p>Status: {$row['status']}</p>
                                 </div>";
                         }
                     } else {

@@ -2,21 +2,43 @@
 include 'connection.php';
 session_start();
 
+// Initialize feedback message
+$message = '';
+
 // Handle update
 if (isset($_POST['update'])) {
     $id = intval($_POST['id']);
-    $name = $_POST['name'];
-    $blood_group = $_POST['blood_group'];
-    $age = intval($_POST['Age']);
-    $contact = $_POST['contact'];
-    $location = $_POST['location'];
+    $name = trim($_POST['name']);
+    $blood_group = trim($_POST['blood_group']);
+    $age = intval($_POST['age']);
+    $contact = trim($_POST['contact']);
+    $location = trim($_POST['location']);
+    $status = trim($_POST['status']);
+    $times_donated = intval($_POST['times_donated']);
+    $last_donation_date = !empty($_POST['last_donation_date']) ? $_POST['last_donation_date'] : NULL;
 
-    $update_sql = "UPDATE doners SET name=?, blood_group=?, age=?, contact=?, location=? WHERE id=?";
+    $update_sql = "UPDATE doners SET name=?, blood_group=?, age=?, contact=?, location=?, times_donated=?, status=?, last_donation_date=? WHERE id=?";
     $stmt = $con->prepare($update_sql);
-    $stmt->bind_param("ssissi", $name, $blood_group, $age, $contact, $location, $id);
-    $stmt->execute();
+    $stmt->bind_param("ssisssssi", $name, $blood_group, $age, $contact, $location, $times_donated, $status, $last_donation_date, $id);
 
-    header("Location: manage_donors.php");
+    if ($stmt->execute()) {
+        $message = "Donor details updated successfully.";
+    } else {
+        $message = "Error updating donor details: " . $stmt->error;
+    }
+}
+
+// Handle delete
+if (isset($_GET['delete_id'])) {
+    $delete_id = intval($_GET['delete_id']);
+    $stmt = $con->prepare("DELETE FROM doners WHERE id = ?");
+    $stmt->bind_param("i", $delete_id);
+    if ($stmt->execute()) {
+        $message = "Donor deleted successfully.";
+    } else {
+        $message = "Error deleting donor: " . $stmt->error;
+    }
+    header("Location: manage_donors.php?msg=" . urlencode($message));
     exit;
 }
 
@@ -24,27 +46,30 @@ if (isset($_POST['update'])) {
 $edit_donor = null;
 if (isset($_GET['edit_id'])) {
     $edit_id = intval($_GET['edit_id']);
-    $edit_result = $con->query("SELECT * FROM doners WHERE id = $edit_id");
-    $edit_donor = $edit_result->fetch_assoc();
+    $stmt = $con->prepare("SELECT * FROM doners WHERE id = ?");
+    $stmt->bind_param("i", $edit_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $edit_donor = $result->fetch_assoc();
 }
 
-// Handle delete
-if (isset($_GET['delete_id'])) {
-    $delete_id = intval($_GET['delete_id']);
-    $con->query("DELETE FROM doners WHERE id = $delete_id");
-    header("Location: manage_donors.php");
-    exit;
-}
-
-// Handle search
+// Handle search safely using prepared statement
 $search = '';
-if (isset($_GET['search']) && !empty($_GET['search'])) {
-    $search = $con->real_escape_string($_GET['search']);
-    $sql = "SELECT * FROM doners WHERE name LIKE '%$search%' OR blood_group LIKE '%$search%' OR location LIKE '%$search%'";
+if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
+    $search = trim($_GET['search']);
+    $search_param = "%" . $search . "%";
+    $stmt = $con->prepare("SELECT * FROM doners WHERE name LIKE ? OR blood_group LIKE ? OR location LIKE ?");
+    $stmt->bind_param("sss", $search_param, $search_param, $search_param);
+    $stmt->execute();
+    $result = $stmt->get_result();
 } else {
-    $sql = "SELECT * FROM doners";
+    $result = $con->query("SELECT * FROM doners");
 }
-$result = $con->query($sql);
+
+// Display message from redirect
+if (isset($_GET['msg'])) {
+    $message = htmlspecialchars($_GET['msg']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -62,6 +87,18 @@ $result = $con->query($sql);
             color: #d10000;
             text-align: center;
             margin-bottom: 2rem;
+        }
+        .message {
+            max-width: 600px;
+            margin: 1rem auto;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #28a745;
+            text-align: center;
+        }
+        .error {
+            background-color: #dc3545;
         }
         table {
             width: 100%;
@@ -103,11 +140,41 @@ $result = $con->query($sql);
         }
         .search-form button {
             padding: 8px 16px;
+            cursor: pointer;
+        }
+        input[type="date"], input[type="number"], input[type="text"] {
+            padding: 5px;
+            font-size: 14px;
+        }
+        input[type="number"] {
+            width: 80px;
+        }
+        form.update-form button[type="submit"] {
+            padding: 5px 10px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        form.update-form a {
+            padding: 5px 10px;
+            background-color: #6c757d;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-left: 5px;
         }
     </style>
 </head>
 <body>
     <h2>All Registered Donors</h2>
+
+    <?php if (!empty($message)): ?>
+        <div class="message <?= strpos($message, 'Error') === 0 ? 'error' : '' ?>">
+            <?= $message; ?>
+        </div>
+    <?php endif; ?>
 
     <form method="GET" action="manage_donors.php" class="search-form">
         <input type="text" name="search" placeholder="Search by name, blood group or location" value="<?= htmlspecialchars($search); ?>">
@@ -124,51 +191,54 @@ $result = $con->query($sql);
             <th>Email</th>
             <th>Contact</th>
             <th>Location</th>
+            <th>Times Donated</th>
+                 <th>Status</th>
+            <th>Last Donation Date</th>
             <th>Actions</th>
         </tr>
-        <?php
-        if ($result->num_rows > 0):
-            while ($row = $result->fetch_assoc()):
-                if ($edit_donor && $edit_donor['id'] == $row['id']):
-        ?>
-        <tr>
-            <form method="POST" action="manage_donors.php">
-                <input type="hidden" name="id" value="<?= $edit_donor['id']; ?>">
-                <td><?= $edit_donor['id']; ?></td>
-                <td><input type="text" name="name" value="<?= htmlspecialchars($edit_donor['name']); ?>"></td>
-                <td><input type="text" name="blood_group" value="<?= htmlspecialchars($edit_donor['blood_group']); ?>"></td>
-                <td><input type="number" name="Age" value="<?= htmlspecialchars($edit_donor['age']); ?>"></td>
-                <td><?= htmlspecialchars($edit_donor['email']); ?></td>
-                <td><input type="text" name="contact" value="<?= htmlspecialchars($edit_donor['contact']); ?>"></td>
-                <td><input type="text" name="location" value="<?= htmlspecialchars($edit_donor['location']); ?>"></td>
-                <td>
-                    <button type="submit" name="update">Update</button>
-                    <a href="manage_donors.php">Cancel</a>
-                </td>
-            </form>
-        </tr>
-        <?php
-                else:
-        ?>
-        <tr>
-            <td><?= $row['id']; ?></td>
-            <td><?= htmlspecialchars($row['name']); ?></td>
-            <td><?= htmlspecialchars($row['blood_group']); ?></td>
-            <td><?= htmlspecialchars($row['age']); ?></td>
-            <td><?= htmlspecialchars($row['email']); ?></td>
-            <td><?= htmlspecialchars($row['contact']); ?></td>
-            <td><?= htmlspecialchars($row['location']); ?></td>
-            <td class="action-buttons">
-                <a href="manage_donors.php?edit_id=<?= $row['id']; ?>" class="edit-btn">Edit</a>
-                <a href="manage_donors.php?delete_id=<?= $row['id']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this donor?');">Delete</a>
-            </td>
-        </tr>
-        <?php
-                endif;
-            endwhile;
-        else:
-        ?>
-        <tr><td colspan="8">No donors found.</td></tr>
+        <?php if ($result && $result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <?php if ($edit_donor && $edit_donor['id'] == $row['id']): ?>
+                    <tr>
+                        <form method="POST" action="manage_donors.php" class="update-form">
+                            <input type="hidden" name="id" value="<?= $edit_donor['id']; ?>">
+                            <td><?= $edit_donor['id']; ?></td>
+                            <td><input type="text" name="name" value="<?= htmlspecialchars($edit_donor['name']); ?>" required></td>
+                            <td><input type="text" name="blood_group" value="<?= htmlspecialchars($edit_donor['blood_group']); ?>" required></td>
+                            <td><input type="number" name="age" value="<?= htmlspecialchars($edit_donor['age']); ?>" required min="1"></td>
+                            <td><?= htmlspecialchars($edit_donor['email']); ?></td>
+                            <td><input type="text" name="contact" value="<?= htmlspecialchars($edit_donor['contact']); ?>" required></td>
+                            <td><input type="text" name="location" value="<?= htmlspecialchars($edit_donor['location']); ?>" required></td>
+                            <td><input type="number" name="times_donated" value="<?= htmlspecialchars($edit_donor['times_donated']); ?>" min="0"></td>
+                            <td><input type="text" name="status" value="<?= htmlspecialchars($edit_donor['status']); ?>" min="0"></td>
+                            <td><input type="date" name="last_donation_date" value="<?= htmlspecialchars($edit_donor['last_donation_date']); ?>"></td>
+                            <td>
+                                <button type="submit" name="update">Update</button>
+                                <a href="manage_donors.php">Cancel</a>
+                            </td>
+                        </form>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <td><?= $row['id']; ?></td>
+                        <td><?= htmlspecialchars($row['name']); ?></td>
+                        <td><?= htmlspecialchars($row['blood_group']); ?></td>
+                        <td><?= htmlspecialchars($row['age']); ?></td>
+                        <td><?= htmlspecialchars($row['email']); ?></td>
+                        <td><?= htmlspecialchars($row['contact']); ?></td>
+                        <td><?= htmlspecialchars($row['location']); ?></td>
+                        <td><?= htmlspecialchars($row['times_donated']); ?></td>
+                        <td><?= htmlspecialchars($row['status']); ?></td>
+                        <td><?= $row['last_donation_date'] ? date('F j, Y', strtotime($row['last_donation_date'])) : 'N/A'; ?></td>
+                        <td class="action-buttons">
+                            <a href="manage_donors.php?edit_id=<?= $row['id']; ?>" class="edit-btn">Edit</a>
+                            <a href="manage_donors.php?delete_id=<?= $row['id']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this donor?');">Delete</a>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="10">No donors found.</td></tr>
         <?php endif; ?>
     </table>
 </body>

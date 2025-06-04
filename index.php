@@ -195,7 +195,7 @@ include 'connection.php'; // Include your database connection
             }
 
             // Fetch 4 donors
-            $sql = "SELECT name, blood_group, location FROM doners LIMIT 4";
+            $sql = "SELECT name, blood_group, location,status FROM doners LIMIT 4";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
@@ -205,6 +205,7 @@ include 'connection.php'; // Include your database connection
                     echo '<h3>' . htmlspecialchars($row["name"]) . '</h3>';
                     echo '<p><strong>Blood Group:</strong> ' . htmlspecialchars($row["blood_group"]) . '</p>';
                     echo '<p><strong>Location:</strong> ' . htmlspecialchars($row["location"]) . '</p>';
+                    echo '<p><strong>Status:</strong> ' . htmlspecialchars($row["status"]) . '</p>';
                     echo '</div>';
                 }
             } else {
