@@ -139,6 +139,49 @@ nav ul li a:hover {
     cursor: pointer;
 }
 
+.notification.success {
+    background-color: #e6fbe9;
+    color: #2e7d32;
+    border: 1px solid #b2dfdb;
+    padding: 1rem;
+    margin: 1rem auto;
+    border-radius: 6px;
+    width: 250px;
+    font-weight: 500;
+    text-align: center;
+    position: absolute;
+}
+
+.notification.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+    padding: 1rem;
+    margin: 1rem auto;
+    border-radius: 6px;
+    width: 250px;
+    font-weight: 500;
+    text-align: center;
+    position: absolute;
+}
+
+.badge {
+    background: red;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+}
+
+.close-btn {
+    float: right;
+    font-size: 16px;
+    cursor: pointer;
+}
+
 /* ==== Footer Styles ==== */
 footer {
     background-color: #222;

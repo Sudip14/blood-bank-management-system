@@ -140,15 +140,14 @@ include 'connection.php';
                         $stmt->bind_param("ss", $location, $blood_group);
                     } else {
                         // If no location provided, sort by name only
-                        $stmt = $con->prepare("
-                            SELECT name, blood_group, contact, location, status
-                            FROM doners
-                            WHERE blood_group = ?
-                            ORDER BY name ASC
-                        ");
-                        $stmt->bind_param("s", $blood_group);
+$stmt = $con->prepare("
+    SELECT name, blood_group, contact, location
+    FROM doners
+    WHERE blood_group = ?
+    ORDER BY name ASC
+");
+$stmt->bind_param("s", $blood_group);
                     }
-
                     $stmt->execute();
                     $result = $stmt->get_result();
 
@@ -159,7 +158,6 @@ include 'connection.php';
                                     <p>Blood Group: {$row['blood_group']}</p>
                                     <p>Contact: {$row['contact']}</p>
                                     <p>Location: {$row['location']}</p>
-                                    <p>Status: {$row['status']}</p>
                                 </div>";
                         }
                     } else {

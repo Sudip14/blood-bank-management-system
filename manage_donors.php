@@ -13,13 +13,12 @@ if (isset($_POST['update'])) {
     $age = intval($_POST['age']);
     $contact = trim($_POST['contact']);
     $location = trim($_POST['location']);
-    $status = trim($_POST['status']);
     $times_donated = intval($_POST['times_donated']);
     $last_donation_date = !empty($_POST['last_donation_date']) ? $_POST['last_donation_date'] : NULL;
 
-    $update_sql = "UPDATE doners SET name=?, blood_group=?, age=?, contact=?, location=?, times_donated=?, status=?, last_donation_date=? WHERE id=?";
+    $update_sql = "UPDATE doners SET name=?, blood_group=?, age=?, contact=?, location=?, times_donated=?, last_donation_date=? WHERE id=?";
     $stmt = $con->prepare($update_sql);
-    $stmt->bind_param("ssisssssi", $name, $blood_group, $age, $contact, $location, $times_donated, $status, $last_donation_date, $id);
+    $stmt->bind_param("ssissssi", $name, $blood_group, $age, $contact, $location, $times_donated, $last_donation_date, $id);
 
     if ($stmt->execute()) {
         $message = "Donor details updated successfully.";
@@ -192,7 +191,6 @@ if (isset($_GET['msg'])) {
             <th>Contact</th>
             <th>Location</th>
             <th>Times Donated</th>
-                 <th>Status</th>
             <th>Last Donation Date</th>
             <th>Actions</th>
         </tr>
@@ -210,7 +208,6 @@ if (isset($_GET['msg'])) {
                             <td><input type="text" name="contact" value="<?= htmlspecialchars($edit_donor['contact']); ?>" required></td>
                             <td><input type="text" name="location" value="<?= htmlspecialchars($edit_donor['location']); ?>" required></td>
                             <td><input type="number" name="times_donated" value="<?= htmlspecialchars($edit_donor['times_donated']); ?>" min="0"></td>
-                            <td><input type="text" name="status" value="<?= htmlspecialchars($edit_donor['status']); ?>" min="0"></td>
                             <td><input type="date" name="last_donation_date" value="<?= htmlspecialchars($edit_donor['last_donation_date']); ?>"></td>
                             <td>
                                 <button type="submit" name="update">Update</button>
@@ -228,7 +225,6 @@ if (isset($_GET['msg'])) {
                         <td><?= htmlspecialchars($row['contact']); ?></td>
                         <td><?= htmlspecialchars($row['location']); ?></td>
                         <td><?= htmlspecialchars($row['times_donated']); ?></td>
-                        <td><?= htmlspecialchars($row['status']); ?></td>
                         <td><?= $row['last_donation_date'] ? date('F j, Y', strtotime($row['last_donation_date'])) : 'N/A'; ?></td>
                         <td class="action-buttons">
                             <a href="manage_donors.php?edit_id=<?= $row['id']; ?>" class="edit-btn">Edit</a>

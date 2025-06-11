@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 04, 2025 at 09:08 AM
+-- Generation Time: Jun 11, 2025 at 02:43 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,7 +36,7 @@ CREATE TABLE `blood_requests` (
   `city` varchar(100) DEFAULT NULL,
   `contact` varchar(20) DEFAULT NULL,
   `request_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `status` varchar(20) DEFAULT 'Pending',
   `user_email` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -45,13 +45,18 @@ CREATE TABLE `blood_requests` (
 --
 
 INSERT INTO `blood_requests` (`id`, `blood_group`, `units_requested`, `user_id`, `name`, `city`, `contact`, `request_time`, `status`, `user_email`) VALUES
-(26, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:52:24', 'approved', 'bhasimasudeep05@gmail.com'),
-(27, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:54:52', 'pending', 'bhasimasudeep05@gmail.com'),
-(28, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:59:07', 'pending', 'bhasimasudeep05@gmail.com'),
-(29, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:05:53', 'pending', 'bhasimasudeep05@gmail.com'),
-(30, 'A+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:26:08', 'rejected', 'bhasimasudeep05@gmail.com'),
-(31, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:26:37', 'approved', 'bhasimasudeep05@gmail.com'),
-(32, 'AB+', 3, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:27:01', 'pending', 'bhasimasudeep05@gmail.com');
+(26, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:52:24', 'Approved', 'bhasimasudeep05@gmail.com'),
+(27, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:54:52', '', 'bhasimasudeep05@gmail.com'),
+(28, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:59:07', '', 'bhasimasudeep05@gmail.com'),
+(29, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:05:53', '', 'bhasimasudeep05@gmail.com'),
+(30, 'A+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:26:08', 'Approved', 'bhasimasudeep05@gmail.com'),
+(31, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:26:37', '', 'bhasimasudeep05@gmail.com'),
+(32, 'AB+', 3, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:27:01', 'Approved', 'bhasimasudeep05@gmail.com'),
+(33, 'A+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-10 16:17:52', 'Rejected', 'bhasimasudeep05@gmail.com'),
+(34, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:03:02', 'Approved', 'bhasimasudeep05@gmail.com'),
+(35, 'A+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:12:11', '', 'bhasimasudeep05@gmail.com'),
+(36, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:15:10', '', 'bhasimasudeep05@gmail.com'),
+(37, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:23:35', 'Pending', 'bhasimasudeep05@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -69,16 +74,19 @@ CREATE TABLE `doners` (
   `password` varchar(255) NOT NULL,
   `blood_group` varchar(5) NOT NULL,
   `location` varchar(100) NOT NULL,
-  `last_donation_date` date DEFAULT NULL
+  `last_donation_date` date DEFAULT NULL,
+  `times_donated` int(11) DEFAULT 0,
+  `status` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `doners`
 --
 
-INSERT INTO `doners` (`id`, `name`, `age`, `gender`, `contact`, `email`, `password`, `blood_group`, `location`, `last_donation_date`) VALUES
-(1, 'sudeep bhasima', 20, 'Male', '9866443370', 'bhasimasudeep05@gmail.com', '$2y$10$ZG3I7oI8XcpzmUBY4/aQFOtPsfkE9gUvtTt723rkkyKA9.zo9i8kq', 'b+', 'bhaktapur', NULL),
-(2, 'sudip bhasima', 21, 'Male', '9866443376', 'prazr23@gmail.com', '$2y$10$D51b.SWZ680hTjRbB2.Qpu8gSm3ZRnHaWl17MkdCGwn2WJgl4Bsga', 'A+', 'bkt', NULL);
+INSERT INTO `doners` (`id`, `name`, `age`, `gender`, `contact`, `email`, `password`, `blood_group`, `location`, `last_donation_date`, `times_donated`, `status`) VALUES
+(1, 'sudeep bhasima', 20, 'Male', '9866443370', 'bhasimasudeep05@gmail.com', '$2y$10$ZG3I7oI8XcpzmUBY4/aQFOtPsfkE9gUvtTt723rkkyKA9.zo9i8kq', 'b+', 'bhaktapur', '2025-01-01', 1, NULL),
+(2, 'sudip bhasima', 21, 'Male', '9866443376', 'prazr23@gmail.com', '$2y$10$D51b.SWZ680hTjRbB2.Qpu8gSm3ZRnHaWl17MkdCGwn2WJgl4Bsga', 'A+', 'bkt', NULL, 0, NULL),
+(3, 'ram', 26, 'Male', '9866443375', 'ram@gmail.com', '$2y$10$q8sdaGM0wIK88KzMXiHUFeboPPRhBL90CeCHBSJ3LtBkoRx0tXWpK', 'ab-', 'ktm', '2025-06-11', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -100,13 +108,13 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `blood_group`, `units_available`, `name`, `city`, `contact`) VALUES
-(1, 'A+', 2, NULL, NULL, NULL),
+(1, 'A+', 0, NULL, NULL, NULL),
 (2, 'A-', 0, NULL, NULL, NULL),
 (3, 'B+', 0, NULL, NULL, NULL),
 (4, 'B-', 0, NULL, NULL, NULL),
-(5, 'O+', 0, NULL, NULL, NULL),
+(5, 'O+', 14, NULL, NULL, NULL),
 (6, 'O-', 0, NULL, NULL, NULL),
-(7, 'AB+', 10, NULL, NULL, NULL),
+(7, 'AB+', 7, NULL, NULL, NULL),
 (8, 'AB-', 0, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -133,7 +141,8 @@ INSERT INTO `inventory_log` (`id`, `blood_group`, `change_type`, `units_changed`
 (3, 'A+', 'remove', 9, '2025-04-29 15:41:51'),
 (4, 'A+', 'add', 20, '2025-05-02 13:11:46'),
 (5, 'AB+', 'add', 16, '2025-05-02 17:14:09'),
-(6, 'A+', 'add', 8, '2025-05-05 01:32:47');
+(6, 'A+', 'add', 8, '2025-05-05 01:32:47'),
+(7, 'O+', 'add', 14, '2025-06-11 12:32:10');
 
 -- --------------------------------------------------------
 
@@ -204,13 +213,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `blood_requests`
 --
 ALTER TABLE `blood_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `doners`
 --
 ALTER TABLE `doners`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -222,7 +231,7 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `inventory_log`
 --
 ALTER TABLE `inventory_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`

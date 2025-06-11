@@ -94,7 +94,22 @@ include 'connection.php'; // Include your database connection
                 <li><a href="search.php">Find Donors</a></li>
                 <li><a href="#about-us">About Us</a></li>
                 <li><a href="my_requests.php">View My Requests</a></li>
-                <li><a href="#"><i class="fa-regular fa-bell"></i></a></li>
+                
+<li class="dropdown" style="position: relative;">
+  <a href="#" id="bellBtn">
+    <i class="fa-regular fa-bell"></i>
+    <span class="badge">1</span>
+  </a>
+
+  <div id="bellNotification" style="display: none;">
+    <?php 
+    ob_start();  // Start output buffering
+    include 'notification.php'; 
+    ob_end_flush(); // Output everything safely
+    ?>
+  </div>
+</li>
+
                 <li class="dropdown">
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <a href="#">Login <i class="fa-duotone fa-solid fa-user"></i></a>
@@ -121,6 +136,13 @@ include 'connection.php'; // Include your database connection
         </nav>
     </div>
 </header>
+<script>
+document.getElementById('bellBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    const note = document.getElementById('bellNotification');
+    note.style.display = note.style.display === 'none' ? 'block' : 'none';
+});
+</script>
 
 <!-- JS for mobile toggle -->
 <script>
@@ -130,7 +152,7 @@ include 'connection.php'; // Include your database connection
     });
 </script>
 
-</header>
+
 
 <!-- Optional JS to enhance dropdown toggle -->
 <script>
