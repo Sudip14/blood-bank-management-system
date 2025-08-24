@@ -1,9 +1,14 @@
 <?php
+// Start a new session or resume existing one
 session_start();
+
+// Check if user is logged in (if not, redirect to login page)
 if (!isset($_SESSION['user_name'])) {
     header("Location: login.php");
     exit;
 }
+
+// Include database connection file
 include 'connection.php';
 ?>
 
@@ -15,6 +20,7 @@ include 'connection.php';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Find Blood</title>
     <style>
+        /* ======= Styling for page layout ======= */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -66,6 +72,7 @@ include 'connection.php';
             border-radius: 5px;
         }
 
+        /* ======= Styling for donor list ======= */
         .donor-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -112,24 +119,30 @@ include 'connection.php';
 </head>
 
 <body>
+    <!-- Page Header -->
     <header>Find Blood Donors</header>
 
     <div class="container">
         <div class="section">
             <h2>Search for Blood Donors</h2>
+
+            <!-- Search Form -->
             <form method="post">
                 <input type="text" name="blood_group" placeholder="Enter Blood Group (e.g., A+)" required />
                 <input type="text" name="location" placeholder="Enter Location (optional)" />
                 <button type="submit" name="search" class="btn">Search</button>
             </form>
+
+            <!-- Donor List Results -->
             <div id="donorList" class="donor-list">
                 <?php
+                // Check if the form is submitted
                 if (isset($_POST['search'])) {
-                    $blood_group = $_POST['blood_group'];
-                    $location = trim($_POST['location']);
+                    $blood_group = $_POST['blood_group'];   // Get blood group from form
+                    $location = trim($_POST['location']);   // Get location (optional)
 
+                    // If user entered location, prioritize matching donors
                     if (!empty($location)) {
-                        // Prioritize exact location matches, then others with the same blood group
                         $stmt = $con->prepare("
                             SELECT name, blood_group, contact, location,
                                 CASE WHEN location = ? THEN 1 ELSE 0 END AS priority
@@ -139,18 +152,21 @@ include 'connection.php';
                         ");
                         $stmt->bind_param("ss", $location, $blood_group);
                     } else {
-                        // If no location provided, sort by name only
-$stmt = $con->prepare("
-    SELECT name, blood_group, contact, location
-    FROM doners
-    WHERE blood_group = ?
-    ORDER BY name ASC
-");
-$stmt->bind_param("s", $blood_group);
+                        // If no location entered, search only by blood group
+                        $stmt = $con->prepare("
+                            SELECT name, blood_group, contact, location
+                            FROM doners
+                            WHERE blood_group = ?
+                            ORDER BY name ASC
+                        ");
+                        $stmt->bind_param("s", $blood_group);
                     }
+
+                    // Execute query
                     $stmt->execute();
                     $result = $stmt->get_result();
 
+                    // Display results
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             echo "<div class='donor'>
@@ -163,6 +179,8 @@ $stmt->bind_param("s", $blood_group);
                     } else {
                         echo "<p>No donors found.</p>";
                     }
+
+                    // Close statement
                     $stmt->close();
                 }
                 ?>
@@ -170,5 +188,4 @@ $stmt->bind_param("s", $blood_group);
         </div>
     </div>
 </body>
-
 </html>
