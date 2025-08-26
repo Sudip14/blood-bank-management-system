@@ -1,43 +1,162 @@
 <?php
-// Start a new session or resume existing one
 session_start();
-
-// Check if user is logged in (if not, redirect to login page)
 if (!isset($_SESSION['user_name'])) {
     header("Location: login.php");
     exit;
 }
-
-// Include database connection file
 include 'connection.php';
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Find Blood</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
-        /* ======= Styling for page layout ======= */
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
             padding: 0;
             background: #f8f8f8;
         }
 
-        header {
-            background: red;
-            color: white;
-            padding: 20px;
-            font-size: 24px;
-        }
+        /* ======= Navbar Styles ======= */
+/* ======= BloodCare Navigation Bar ======= */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #d10000; /* Bold red background */
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
 
+.logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+}
+
+.logo span {
+    color: #ffcc00; /* Yellow for "Care" */
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: opacity 0.3s ease;
+}
+
+nav ul li a:hover {
+    opacity: 0.8;
+}
+
+/* Notification Bell */
+.badge {
+    background-color: white;
+    color: #d10000;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+}
+
+/* Dropdown Menu */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 10px 0;
+    list-style: none;
+    margin: 0;
+    top: 100%;
+    right: 0;
+    min-width: 160px;
+    z-index: 1000;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content li a {
+    display: block;
+    padding: 10px 20px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown-content li a:hover {
+    background-color: #f2f2f2;
+}
+
+/* User Info */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+}
+
+/* Mobile Menu */
+.mobile-menu-btn {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    #navMenu {
+        display: none;
+        flex-direction: column;
+        background-color: #d10000;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 200px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    #navMenu.show {
+        display: flex;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: white;
+    }
+
+    nav ul li a {
+        padding: 10px 20px;
+    }
+}
+
+        /* ======= Page Layout ======= */
         .container {
             padding: 20px;
+            text-align: center;
         }
 
         .section {
@@ -72,7 +191,6 @@ include 'connection.php';
             border-radius: 5px;
         }
 
-        /* ======= Styling for donor list ======= */
         .donor-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -97,14 +215,6 @@ include 'connection.php';
             background: #fff0f0;
         }
 
-        .donor img {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            border: 2px solid red;
-        }
-
         .donor h3 {
             margin: 0 0 10px 0;
             color: red;
@@ -119,29 +229,73 @@ include 'connection.php';
 </head>
 
 <body>
-    <!-- Page Header -->
-    <header>Find Blood Donors</header>
+    <!-- Navigation Bar -->
+    <header>
+        <div class="header-container">
+            <div class="logo">Blood<span>Care</span></div>
+            <nav>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul id="navMenu">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="#donors">Donors</a></li>
+                    <li><a href="user_inventory.php">Request Blood</a></li>
+                    <li><a href="search.php">Find Donors</a></li>
+                    <li><a href="#about-us">About Us</a></li>
+                    <li><a href="my_requests.php">View My Requests</a></li>
 
+                    <li class="dropdown" style="position: relative;">
+                        <a href="#" id="bellBtn">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="badge">1</span>
+                        </a>
+                        <div id="bellNotification" style="display: none;">
+                            <?php ob_start(); include 'notification.php'; ob_end_flush(); ?>
+                        </div>
+                    </li>
+
+                    <li class="dropdown">
+                        <?php if (!isset($_SESSION['user_id'])): ?>
+                            <a href="#">Login <i class="fa-solid fa-user"></i></a>
+                            <ul class="dropdown-content">
+                                <li><a href="admin_login.php">Admin Login</a></li>
+                                <li><a href="login.php">User Login</a></li>
+                            </ul>
+                        <?php else: ?>
+                            <a href="#">
+                                <div class="user-info">
+                                    <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                            </a>
+                            <ul class="dropdown-content">
+                                <li><a href="user_profile_update.php">Update Profile</a></li>
+                                <li><a href="user_logout.php">Logout</a></li>
+                            </ul>
+                        <?php endif; ?>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
     <div class="container">
         <div class="section">
             <h2>Search for Blood Donors</h2>
-
-            <!-- Search Form -->
             <form method="post">
                 <input type="text" name="blood_group" placeholder="Enter Blood Group (e.g., A+)" required />
                 <input type="text" name="location" placeholder="Enter Location (optional)" />
                 <button type="submit" name="search" class="btn">Search</button>
             </form>
 
-            <!-- Donor List Results -->
             <div id="donorList" class="donor-list">
                 <?php
-                // Check if the form is submitted
                 if (isset($_POST['search'])) {
-                    $blood_group = $_POST['blood_group'];   // Get blood group from form
-                    $location = trim($_POST['location']);   // Get location (optional)
+                    $blood_group = $_POST['blood_group'];
+                    $location = trim($_POST['location']);
 
-                    // If user entered location, prioritize matching donors
                     if (!empty($location)) {
                         $stmt = $con->prepare("
                             SELECT name, blood_group, contact, location,
@@ -152,40 +306,52 @@ include 'connection.php';
                         ");
                         $stmt->bind_param("ss", $location, $blood_group);
                     } else {
-                        // If no location entered, search only by blood group
                         $stmt = $con->prepare("
                             SELECT name, blood_group, contact, location
                             FROM doners
                             WHERE blood_group = ?
                             ORDER BY name ASC
                         ");
-                        $stmt->bind_param("s", $blood_group);
+                        $stmt->
+                                                $stmt->bind_param("s", $blood_group);
                     }
 
-                    // Execute query
+                    // Execute and fetch results
                     $stmt->execute();
                     $result = $stmt->get_result();
 
-                    // Display results
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             echo "<div class='donor'>
-                                    <h3>{$row['name']}</h3>
-                                    <p>Blood Group: {$row['blood_group']}</p>
-                                    <p>Contact: {$row['contact']}</p>
-                                    <p>Location: {$row['location']}</p>
-                                </div>";
+                                    <h3>" . htmlspecialchars($row['name']) . "</h3>
+                                    <p>Blood Group: " . htmlspecialchars($row['blood_group']) . "</p>
+                                    <p>Contact: " . htmlspecialchars($row['contact']) . "</p>
+                                    <p>Location: " . htmlspecialchars($row['location']) . "</p>
+                                  </div>";
                         }
                     } else {
                         echo "<p>No donors found.</p>";
                     }
 
-                    // Close statement
                     $stmt->close();
                 }
                 ?>
             </div>
         </div>
     </div>
+
+    <!-- Scripts -->
+    <script>
+        document.getElementById('bellBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const note = document.getElementById('bellNotification');
+            note.style.display = note.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('show');
+        });
+    </script>
 </body>
 </html>

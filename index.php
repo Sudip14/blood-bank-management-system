@@ -75,6 +75,8 @@ include 'connection.php'; // Include your database connection
                 color: black;
             }
         }
+                .btn { background: red; color: white; padding: 10px 15px; border: none; cursor: pointer; margin-top: 10px; font-size: 16px; border-radius: 5px; }
+
     </style>
 </head>
 <body>
@@ -238,7 +240,7 @@ document.getElementById('bellBtn').addEventListener('click', function(e) {
         </div>
 <a href="<?php
     echo isset($_SESSION['donor_id']) ? 'book_appointment.php' : 'login.php';
-?>" class="cta-btn">Book Appointment</a>
+?>" class="btn">Book Appointment</a>
 
     </div>
 </section>

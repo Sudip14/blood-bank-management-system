@@ -189,6 +189,7 @@ $result = $stmt->get_result();
             <li><a href="blood_inventory.php"><i class="fas fa-tint"></i> Blood Inventory</a></li>
             <li class="active"><a href="find_requests.php"><i class="fas fa-search"></i> Find Requests</a></li>
             <li><a href="admin_update.php"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="admin_appointments.php"><i class="fas fa-cog"></i> Appointment Management</a></li>
              <li><a href="admin_register.php"> <i class="fa-solid fa-user">+</i>Add New Admin</a></li>
             <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>

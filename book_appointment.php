@@ -40,18 +40,46 @@ if (isset($_POST['book'])) {
 <html>
 <head>
     <title>Book Appointment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f8;
-            margin: 40px;
+            margin: 0;
             color: #333;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: #2c3e50;
+            overflow: hidden;
+            padding: 10px 20px;
+            border-bottom: 2px solid #1a252f;
+        }
+
+        .navbar a {
+            float: left;
+            color: white;
+            text-align: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            background-color: #1a252f;
+        }
+
+        .navbar a:last-child {
+            float: right;
         }
 
         h2, h3 {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
 
         form {
@@ -97,16 +125,17 @@ if (isset($_POST['book'])) {
             text-align: center;
             font-size: 16px;
             font-weight: 500;
+            color: green;
         }
 
         table {
-            width: 100%;
+            width: 90%;
+            margin: 0 auto 40px auto;
             border-collapse: collapse;
             background-color: #fff;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border-radius: 8px;
             overflow: hidden;
-            margin-top: 20px;
         }
 
         th, td {
@@ -134,13 +163,32 @@ if (isset($_POST['book'])) {
             th, td {
                 padding: 10px;
             }
+
+            .navbar a {
+                float: none;
+                display: block;
+                text-align: left;
+            }
+
+            .navbar a:last-child {
+                float: none;
+            }
         }
     </style>
 </head>
 <body>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+    <a href="index.php">Home</a>
+    <a href="book_appointment.php">Book Appointment</a>
+    <a href="my_requests.php">My Requests</a>
+    <a href="logout.php">Logout</a>
+</div>
+
 <h2>Book Blood Donation Appointment</h2>
 
-<?php if ($message) echo "<p style='color:green;'>$message</p>"; ?>
+<?php if ($message) echo "<p>$message</p>"; ?>
 
 <form method="POST">
     <label>Date:</label>
@@ -162,35 +210,35 @@ if (isset($_POST['book'])) {
 
 <h3>Your Appointments</h3>
 <table>
-<tr><th>Date</th><th>Time</th><th>Status</th><th>Location</th></tr>
+    <tr><th>Date</th><th>Time</th><th>Status</th><th>Location</th></tr>
 
-<?php
-$query = "SELECT appointment_date, appointment_time, status, location FROM appointments WHERE doners_id = ? ORDER BY appointment_date DESC";
-$stmt = $con->prepare($query);
+    <?php
+    $query = "SELECT appointment_date, appointment_time, status, location FROM appointments WHERE doners_id = ? ORDER BY appointment_date DESC";
+    $stmt = $con->prepare($query);
 
-if ($stmt === false) {
-    die("Prepare failed: " . htmlspecialchars($con->error));
-}
-
-$stmt->bind_param("i", $doners_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>
-            <td>" . htmlspecialchars($row['appointment_date']) . "</td>
-            <td>" . htmlspecialchars($row['appointment_time']) . "</td>
-            <td>" . htmlspecialchars($row['status']) . "</td>
-            <td>" . htmlspecialchars($row['location']) . "</td>
-        </tr>";
+    if ($stmt === false) {
+        die("Prepare failed: " . htmlspecialchars($con->error));
     }
-} else {
-    echo "<tr><td colspan='4'>No appointments found.</td></tr>";
-}
 
-$stmt->close();
-?>
+    $stmt->bind_param("i", $doners_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>
+                <td>" . htmlspecialchars($row['appointment_date']) . "</td>
+                <td>" . htmlspecialchars($row['appointment_time']) . "</td>
+                <td>" . htmlspecialchars($row['status']) . "</td>
+                <td>" . htmlspecialchars($row['location']) . "</td>
+            </tr>";
+        }
+    } else {
+        echo "<tr><td colspan='4'>No appointments found.</td></tr>";
+    }
+
+    $stmt->close();
+    ?>
 </table>
 </body>
 </html>
