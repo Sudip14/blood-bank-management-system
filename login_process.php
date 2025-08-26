@@ -34,9 +34,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_blood_group'] = $blood_group;
             $_SESSION['user_location'] = $location;
 
+            $_SESSION['doners_id'] = $id;
+
             $stmt->close();
             $con->close();
-            header("Location: index.php");
+           header("Location: book_appointment.php");
             exit();
         } else {
             $_SESSION['error'] = "❌ Incorrect password.";

@@ -236,7 +236,10 @@ document.getElementById('bellBtn').addEventListener('click', function(e) {
             $conn->close();
             ?>
         </div>
-        <a href="register.php" class="cta-btn">Become a Donor</a>
+<a href="<?php
+    echo isset($_SESSION['donor_id']) ? 'book_appointment.php' : 'login.php';
+?>" class="cta-btn">Book Appointment</a>
+
     </div>
 </section>
 
