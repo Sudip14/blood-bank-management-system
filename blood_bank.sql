@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 11, 2025 at 02:43 PM
+-- Generation Time: Aug 26, 2025 at 12:54 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +20,32 @@ SET time_zone = "+00:00";
 --
 -- Database: `blood_bank`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `appointments`
+--
+
+CREATE TABLE `appointments` (
+  `id` int(11) NOT NULL,
+  `doners_id` int(11) NOT NULL,
+  `appointment_date` date NOT NULL,
+  `appointment_time` time NOT NULL,
+  `status` enum('Pending','Confirmed','Completed','Cancelled') DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `location` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `appointments`
+--
+
+INSERT INTO `appointments` (`id`, `doners_id`, `appointment_date`, `appointment_time`, `status`, `created_at`, `location`) VALUES
+(1, 1, '2025-08-28', '12:12:00', 'Completed', '2025-08-26 07:02:17', NULL),
+(2, 1, '2025-08-27', '14:03:00', 'Confirmed', '2025-08-26 07:09:40', NULL),
+(3, 1, '2025-05-01', '13:03:00', 'Pending', '2025-08-26 07:24:41', NULL),
+(4, 1, '2025-05-01', '13:03:00', 'Pending', '2025-08-26 07:28:12', 'Bhaktapur Blood Center');
 
 -- --------------------------------------------------------
 
@@ -45,7 +71,7 @@ CREATE TABLE `blood_requests` (
 --
 
 INSERT INTO `blood_requests` (`id`, `blood_group`, `units_requested`, `user_id`, `name`, `city`, `contact`, `request_time`, `status`, `user_email`) VALUES
-(26, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:52:24', 'Approved', 'bhasimasudeep05@gmail.com'),
+(26, 'A+', 6, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:52:24', 'Approved', 'bhasimasudeep05@gmail.com'),
 (27, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:54:52', '', 'bhasimasudeep05@gmail.com'),
 (28, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 05:59:07', '', 'bhasimasudeep05@gmail.com'),
 (29, 'A+', NULL, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-04 06:05:53', '', 'bhasimasudeep05@gmail.com'),
@@ -56,7 +82,8 @@ INSERT INTO `blood_requests` (`id`, `blood_group`, `units_requested`, `user_id`,
 (34, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:03:02', 'Approved', 'bhasimasudeep05@gmail.com'),
 (35, 'A+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:12:11', '', 'bhasimasudeep05@gmail.com'),
 (36, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:15:10', '', 'bhasimasudeep05@gmail.com'),
-(37, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:23:35', 'Pending', 'bhasimasudeep05@gmail.com');
+(37, 'AB+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-06-11 12:23:35', 'Pending', 'bhasimasudeep05@gmail.com'),
+(38, 'O+', 1, 1, 'sudeep bhasima', 'bhaktapur', '9866443370', '2025-08-26 09:52:16', 'Pending', 'bhasimasudeep05@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -86,7 +113,8 @@ CREATE TABLE `doners` (
 INSERT INTO `doners` (`id`, `name`, `age`, `gender`, `contact`, `email`, `password`, `blood_group`, `location`, `last_donation_date`, `times_donated`, `status`) VALUES
 (1, 'sudeep bhasima', 20, 'Male', '9866443370', 'bhasimasudeep05@gmail.com', '$2y$10$ZG3I7oI8XcpzmUBY4/aQFOtPsfkE9gUvtTt723rkkyKA9.zo9i8kq', 'b+', 'bhaktapur', '2025-01-01', 1, NULL),
 (2, 'sudip bhasima', 21, 'Male', '9866443376', 'prazr23@gmail.com', '$2y$10$D51b.SWZ680hTjRbB2.Qpu8gSm3ZRnHaWl17MkdCGwn2WJgl4Bsga', 'A+', 'bkt', NULL, 0, NULL),
-(3, 'ram', 26, 'Male', '9866443375', 'ram@gmail.com', '$2y$10$q8sdaGM0wIK88KzMXiHUFeboPPRhBL90CeCHBSJ3LtBkoRx0tXWpK', 'ab-', 'ktm', '2025-06-11', 1, NULL);
+(3, 'ram', 26, 'Male', '9866443375', 'ram@gmail.com', '$2y$10$q8sdaGM0wIK88KzMXiHUFeboPPRhBL90CeCHBSJ3LtBkoRx0tXWpK', 'ab-', 'ktm', '2025-06-11', 1, NULL),
+(4, 'sduip', 23, 'Male', '9866440070', 'bhasimasudip05@gmail.com', '$2y$10$AdkaenSRBk.9tAcMnO2B2uBrx/twT/qs3x.LhEu4VMh02OYbwaP4m', 'B+', 'bkt', NULL, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -112,7 +140,7 @@ INSERT INTO `inventory` (`id`, `blood_group`, `units_available`, `name`, `city`,
 (2, 'A-', 0, NULL, NULL, NULL),
 (3, 'B+', 0, NULL, NULL, NULL),
 (4, 'B-', 0, NULL, NULL, NULL),
-(5, 'O+', 14, NULL, NULL, NULL),
+(5, 'O+', 13, NULL, NULL, NULL),
 (6, 'O-', 0, NULL, NULL, NULL),
 (7, 'AB+', 7, NULL, NULL, NULL),
 (8, 'AB-', 0, NULL, NULL, NULL);
@@ -174,6 +202,13 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `full_name`, `contac
 --
 
 --
+-- Indexes for table `appointments`
+--
+ALTER TABLE `appointments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_doner` (`doners_id`);
+
+--
 -- Indexes for table `blood_requests`
 --
 ALTER TABLE `blood_requests`
@@ -210,16 +245,22 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `appointments`
+--
+ALTER TABLE `appointments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `blood_requests`
 --
 ALTER TABLE `blood_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `doners`
 --
 ALTER TABLE `doners`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -238,6 +279,16 @@ ALTER TABLE `inventory_log`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `appointments`
+--
+ALTER TABLE `appointments`
+  ADD CONSTRAINT `fk_doner` FOREIGN KEY (`doners_id`) REFERENCES `doners` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
