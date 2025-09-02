@@ -2,7 +2,6 @@
 session_start();
 include 'connection.php'; // defines $con
 
-// Check if donor is logged in
 if (!isset($_SESSION['doners_id'])) {
     header("Location: login.php");
     exit();
@@ -11,31 +10,67 @@ if (!isset($_SESSION['doners_id'])) {
 $doners_id = $_SESSION['doners_id'];
 $message = '';
 
-// Handle appointment booking
 if (isset($_POST['book'])) {
     $date = $_POST['appointment_date'];
     $time = $_POST['appointment_time'];
     $location = $_POST['location'];
 
-    // Check slot availability at the same location
-    $check = mysqli_query($con, "
+    // 1. Check if donor already has a future or pending appointment
+    $futureAppointmentQuery = mysqli_query($con, "
         SELECT * FROM appointments 
-        WHERE appointment_date='$date' 
-        AND appointment_time='$time' 
-        AND location='$location'
+        WHERE doners_id='$doners_id' 
+        AND appointment_date >= CURDATE()
+        AND status IN ('Pending', 'Approved')
+        ORDER BY appointment_date ASC
+        LIMIT 1
     ");
 
-    if (mysqli_num_rows($check) > 0) {
-        $message = "This slot at $location is already booked. Please choose another.";
-    } else {
+    if (mysqli_num_rows($futureAppointmentQuery) > 0) {
+        $existingAppointment = mysqli_fetch_assoc($futureAppointmentQuery);
+        $existingDate = $existingAppointment['appointment_date'];
+        $message = "You already have an appointment on $existingDate. You cannot book a new appointment until this date has passed.";
+    }
+
+    // 2. Check last completed donation for 3-month rule
+    if (empty($message)) {
+        $lastDonationQuery = mysqli_query($con, "
+            SELECT MAX(appointment_date) as last_date 
+            FROM appointments 
+            WHERE doners_id='$doners_id' AND status='Completed'
+        ");
+        $lastDonation = mysqli_fetch_assoc($lastDonationQuery);
+        $lastDate = $lastDonation['last_date'];
+
+        if ($lastDate) {
+            $minDate = date('Y-m-d', strtotime($lastDate . ' +3 months'));
+            if ($date < $minDate) {
+                $message = "Your last donation was on $lastDate. You can only book your next appointment on or after $minDate.";
+            }
+        }
+    }
+
+    // 3. Book appointment if eligible
+    if (empty($message)) {
         $insert = mysqli_query($con, "
-            INSERT INTO appointments (doners_id, appointment_date, appointment_time, location)
-            VALUES ('$doners_id','$date','$time','$location')
+            INSERT INTO appointments (doners_id, appointment_date, appointment_time, location, status)
+            VALUES ('$doners_id','$date','$time','$location','Pending')
         ");
         $message = $insert ? "Appointment booked successfully at $location!" : "Error booking appointment: " . mysqli_error($con);
     }
 }
+
+// 4. Fetch last donation date for display
+$lastDonationQuery = mysqli_query($con, "
+    SELECT last_donation_date FROM doners WHERE id='$doners_id'
+");
+$lastDonation = mysqli_fetch_assoc($lastDonationQuery);
+$nextEligibleDate = '';
+if ($lastDonation['last_donation_date']) {
+    $nextEligibleDate = date('Y-m-d', strtotime($lastDonation['last_donation_date'] . ' +3 months'));
+}
 ?>
+
+
 <!DOCTYPE html>
 <html>
 <head>

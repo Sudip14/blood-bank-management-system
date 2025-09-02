@@ -5,7 +5,7 @@ session_start();
 // Initialize feedback message
 $message = '';
 
-// Handle update
+// Handle update (Admin editing donor manually)
 if (isset($_POST['update'])) {
     $id = intval($_POST['id']);
     $name = trim($_POST['name']);
@@ -20,11 +20,7 @@ if (isset($_POST['update'])) {
     $stmt = $con->prepare($update_sql);
     $stmt->bind_param("ssissssi", $name, $blood_group, $age, $contact, $location, $times_donated, $last_donation_date, $id);
 
-    if ($stmt->execute()) {
-        $message = "Donor details updated successfully.";
-    } else {
-        $message = "Error updating donor details: " . $stmt->error;
-    }
+    $message = $stmt->execute() ? "Donor details updated successfully." : "Error updating donor details: " . $stmt->error;
 }
 
 // Handle delete
@@ -32,13 +28,27 @@ if (isset($_GET['delete_id'])) {
     $delete_id = intval($_GET['delete_id']);
     $stmt = $con->prepare("DELETE FROM doners WHERE id = ?");
     $stmt->bind_param("i", $delete_id);
-    if ($stmt->execute()) {
-        $message = "Donor deleted successfully.";
-    } else {
-        $message = "Error deleting donor: " . $stmt->error;
-    }
+    $message = $stmt->execute() ? "Donor deleted successfully." : "Error deleting donor: " . $stmt->error;
     header("Location: manage_donors.php?msg=" . urlencode($message));
     exit;
+}
+
+// Auto-update last donation date when admin marks appointment as completed
+if (isset($_POST['mark_complete'])) {
+    $appointment_id = intval($_POST['appointment_id']);
+
+    // Get donor_id and appointment_date
+    $res = $con->query("SELECT doners_id, appointment_date FROM appointments WHERE id=$appointment_id");
+    $row = $res->fetch_assoc();
+    $doner_id = $row['doners_id'];
+    $donation_date = $row['appointment_date'];
+
+    // Update appointment status to Completed
+    $con->query("UPDATE appointments SET status='Completed' WHERE id=$appointment_id");
+
+    // Update donor's last donation date and increment times donated
+    $con->query("UPDATE doners SET last_donation_date='$donation_date', times_donated = times_donated + 1 WHERE id=$doner_id");
+    $message = "Appointment marked as completed and donor record updated.";
 }
 
 // Get donor for editing
@@ -52,7 +62,7 @@ if (isset($_GET['edit_id'])) {
     $edit_donor = $result->fetch_assoc();
 }
 
-// Handle search safely using prepared statement
+// Handle search
 $search = '';
 if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
     $search = trim($_GET['search']);
@@ -71,19 +81,54 @@ if (isset($_GET['msg'])) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Donors</title>
+    <title>Manage Donors | BloodCare Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             background: #fef6f6;
+            margin: 0;
+        }
+        .sidebar {
+            width: 250px;
+            background: #d10000;
+            color: #fff7f7ff;
+            position: fixed;
+            height: 100%;
+            padding-top: 2rem;
+        }
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+        .sidebar ul {
+            list-style: none;
+        }
+        .sidebar ul li {
+            padding: 15px 20px;
+            transition: 0.3s;
+        }
+        .sidebar ul li a {
+            color: #fff7f7ff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: block;
+        }
+        .sidebar ul li:hover {
+            background: #a50000;
+        }
+        .main-content {
+            margin-left: 250px;
             padding: 2rem;
         }
         h2 {
-            color: #d10000;
+            color: #f1bcbcff;
             text-align: center;
             margin-bottom: 2rem;
         }
@@ -164,9 +209,47 @@ if (isset($_GET['msg'])) {
             text-decoration: none;
             margin-left: 5px;
         }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+            }
+        }
+        @media (max-width: 576px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                display: flex;
+                justify-content: center;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
+
+<!-- Sidebar Navigation -->
+<div class="sidebar">
+    <h2>BloodCare Admin</h2>
+    <ul>
+        <li><a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="manage_donors.php"><i class="fas fa-users"></i> Manage Donors</a></li>
+        <li><a href="blood_inventory.php"><i class="fas fa-tint"></i> Blood Inventory</a></li>
+        <li><a href="finds_requests.php"><i class="fas fa-search"></i> Find Requests</a></li>
+        <li><a href="admin_update.php"><i class="fas fa-cog"></i> Settings</a></li>
+        <li><a href="admin_appointments.php"><i class="fas fa-calendar-check"></i> Appointment Management</a></li>
+        <li><a href="admin_register.php"><i class="fas fa-user-plus"></i> Add New Admin</a></li>
+        <li><a href="admin_logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
     <h2>All Registered Donors</h2>
 
     <?php if (!empty($message)): ?>
@@ -183,6 +266,7 @@ if (isset($_GET['msg'])) {
 
     <table>
         <tr>
+      
             <th>ID</th>
             <th>Name</th>
             <th>Blood Group</th>
@@ -237,5 +321,6 @@ if (isset($_GET['msg'])) {
             <tr><td colspan="10">No donors found.</td></tr>
         <?php endif; ?>
     </table>
+</div> <!-- End of main-content -->
 </body>
 </html>

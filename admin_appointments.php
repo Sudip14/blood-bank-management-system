@@ -12,10 +12,47 @@ if (isset($_POST['update_status'])) {
     $id = $_POST['id'];
     $status = $_POST['status'];
 
+    // Update appointment status
     $stmt = $con->prepare("UPDATE appointments SET status = ? WHERE id = ?");
+    if (!$stmt) {
+        die("Prepare failed (appointment update): " . $con->error);
+    }
     $stmt->bind_param("si", $status, $id);
 
     if ($stmt->execute()) {
+
+        // If status is Completed, update donor info and inventory
+        if ($status === 'Completed') {
+            // Get appointment details
+            $res = $con->query("SELECT doners_id, appointment_date FROM appointments WHERE id=$id");
+            if ($res && $row = $res->fetch_assoc()) {
+                $doner_id = $row['doners_id'];
+                $appointment_date = $row['appointment_date'];
+
+                // Update donor's last donation date and times donated
+                $stmt2 = $con->prepare("UPDATE doners SET last_donation_date = ?, times_donated = times_donated + 1 WHERE id = ?");
+                if (!$stmt2) {
+                    die("Prepare failed (donor update): " . $con->error);
+                }
+                $stmt2->bind_param("si", $appointment_date, $doner_id);
+                $stmt2->execute();
+                $stmt2->close();
+
+                // Get donor blood group
+                $donor = $con->query("SELECT blood_group FROM doners WHERE id=$doner_id")->fetch_assoc();
+                $blood_group = $donor['blood_group'];
+
+                // Increment blood inventory units_available for that blood group
+                $stmt3 = $con->prepare("UPDATE inventory SET units_available = units_available + 1 WHERE blood_group = ?");
+                if (!$stmt3) {
+                    die("Prepare failed (inventory update): " . $con->error);
+                }
+                $stmt3->bind_param("s", $blood_group);
+                $stmt3->execute();
+                $stmt3->close();
+            }
+        }
+
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     } else {
@@ -39,197 +76,87 @@ if (!$result) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Manage Appointments | BloodCare Admin</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
-            color: #333;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background: #d10000;
-            color: #fff;
-            position: fixed;
-            height: 100%;
-            padding-top: 2rem;
-        }
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
-        }
-        .sidebar ul {
-            list-style: none;
-        }
-        .sidebar ul li {
-            padding: 15px 20px;
-        }
-        .sidebar ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            display: block;
-        }
-        .sidebar ul li:hover {
-            background: #a50000;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            padding: 2rem;
-        }
-
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        th {
-            background-color: #34495e;
-            color: #fff;
-            font-weight: 600;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        form {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        select {
-            padding: 6px 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            font-size: 14px;
-        }
-
-        input[type="submit"] {
-            padding: 6px 12px;
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #27ae60;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 200px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                display: flex;
-                justify-content: center;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Manage Appointments | BloodCare Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:#f4f6f8;color:#333;}
+.sidebar {width:250px;background:#d10000;color:#fff;position:fixed;height:100%;padding-top:2rem;}
+.sidebar h2 {text-align:center;margin-bottom:2rem;font-size:1.8rem;}
+.sidebar ul {list-style:none;}
+.sidebar ul li {padding:15px 20px;}
+.sidebar ul li a {color:#fff;text-decoration:none;font-size:1.1rem;display:block;}
+.sidebar ul li:hover {background:#a50000;}
+.main-content {margin-left:250px;padding:2rem;}
+h2 {text-align:center;color:#2c3e50;margin-bottom:20px;}
+table {width:100%;border-collapse:collapse;background-color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.1);border-radius:8px;overflow:hidden;}
+th, td {padding:12px 16px;text-align:left;border-bottom:1px solid #e0e0e0;}
+th {background-color:#34495e;color:#fff;font-weight:600;}
+tr:hover {background-color:#f9f9f9;}
+form {display:flex;gap:8px;align-items:center;}
+select {padding:6px 10px;border-radius:4px;border:1px solid #ccc;background-color:#fff;font-size:14px;}
+input[type="submit"] {padding:6px 12px;background-color:#2ecc71;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:500;transition:background-color 0.3s ease;}
+input[type="submit"]:hover {background-color:#27ae60;}
+@media (max-width:768px){.sidebar{width:200px;}.main-content{margin-left:200px;}}
+@media (max-width:576px){.sidebar{position:relative;width:100%;height:auto;display:flex;justify-content:center;}.main-content{margin-left:0;}}
+</style>
 </head>
 <body>
 
-<!-- Sidebar Navigation -->
 <div class="sidebar">
-    <h2>BloodCare Admin</h2>
-    <ul>
-        <li><a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-        <li><a href="manage_donors.php"><i class="fas fa-user"></i> Manage Donors</a></li>
-        <li><a href="blood_inventory.php"><i class="fas fa-tint"></i> Blood Inventory</a></li>
-        <li><a href="finds_requests.php"><i class="fas fa-search"></i> Find Requests</a></li>
-        <li><a href="admin_update.php"><i class="fas fa-cog"></i> Settings</a></li>
-        <li><a href="admin_appointments.php"><i class="fas fa-cog"></i> Appointment Management</a></li>
-        <li><a href="admin_register.php"><i class="fas fa-user-plus"></i> Add Admin</a></li>
-        <li><a href="admin_logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-    </ul>
+<h2>BloodCare Admin</h2>
+<ul>
+<li><a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+<li><a href="manage_donors.php"><i class="fas fa-users"></i> Manage Donors</a></li>
+<li><a href="blood_inventory.php"><i class="fas fa-tint"></i> Blood Inventory</a></li>
+<li><a href="finds_requests.php"><i class="fas fa-search"></i> Find Requests</a></li>
+<li><a href="admin_update.php"><i class="fas fa-cog"></i> Settings</a></li>
+<li><a href="admin_appointments.php"><i class="fas fa-calendar-check"></i> Appointment Management</a></li>
+<li><a href="admin_register.php"><i class="fas fa-user-plus"></i> Add Admin</a></li>
+<li><a href="admin_logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+</ul>
 </div>
 
-<!-- Main Content -->
 <div class="main-content">
-    <h2>Manage Appointments</h2>
-    <table>
-        <tr>
-            <th>Donor</th>
-            <th>Contact</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Status</th>
-            <th>Location</th>
-            <th>Action</th>
-        </tr>
+<h2>Manage Appointments</h2>
+<table>
+<tr>
+<th>Donor</th>
+<th>Contact</th>
+<th>Date</th>
+<th>Time</th>
+<th>Status</th>
+<th>Location</th>
+<th>Action</th>
+</tr>
 
-        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-        <tr>
-            <td><?= htmlspecialchars($row['name']) ?></td>
-            <td><?= htmlspecialchars($row['contact']) ?></td>
-            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
-            <td><?= htmlspecialchars($row['appointment_time']) ?></td>
-            <td><?= htmlspecialchars($row['status']) ?></td>
-            <td><?= htmlspecialchars($row['location']) ?></td>
-            <td>
-                <form method="POST">
-                    <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                    <select name="status">
-                        <?php
-                        $statuses = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
-                        foreach ($statuses as $s) {
-                            $selected = ($row['status'] === $s) ? 'selected' : '';
-                            echo "<option value=\"$s\" $selected>$s</option>";
-                        }
-                        ?>
-                    </select>
-                    <input type="submit" name="update_status" value="Update">
-                </form>
-            </td>
-        </tr>
-        <?php } ?>
-    </table>
+<?php while ($row = mysqli_fetch_assoc($result)) { ?>
+<tr>
+<td><?= htmlspecialchars($row['name']) ?></td>
+<td><?= htmlspecialchars($row['contact']) ?></td>
+<td><?= htmlspecialchars($row['appointment_date']) ?></td>
+<td><?= htmlspecialchars($row['appointment_time']) ?></td>
+<td><?= htmlspecialchars($row['status']) ?></td>
+<td><?= htmlspecialchars($row['location']) ?></td>
+<td>
+<form method="POST">
+<input type="hidden" name="id" value="<?= $row['id'] ?>">
+<select name="status">
+<?php
+$statuses = ['Pending', 'Confirmed', 'Completed'];
+foreach ($statuses as $s) {
+    $selected = ($row['status'] === $s) ? 'selected' : '';
+    echo "<option value=\"$s\" $selected>$s</option>";
+}
+?>
+</select>
+<input type="submit" name="update_status" value="Update">
+</form>
+</td>
+</tr>
+<?php } ?>
+</table>
 </div>
 
 </body>
