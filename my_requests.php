@@ -9,7 +9,8 @@ include 'connection.php';
 
 $user_id = $_SESSION['user_id'];
 
-$stmt = $con->prepare("SELECT * FROM blood_requests WHERE user_id = ?");
+// ✅ Order by request_time DESC so most recent requests appear at the top
+$stmt = $con->prepare("SELECT * FROM blood_requests WHERE user_id = ? ORDER BY request_time DESC");
 if (!$stmt) {
     die("Prepare failed: " . $con->error);
 }
@@ -81,7 +82,7 @@ $result = $stmt->get_result();
     <a href="index.php">Home</a>
     <a href="my_requests.php">My Requests</a>
     <a href="donate.php">Donate Blood</a>
-    <a href="logout.php" style="float:right;">Logout</a>
+    <a href="user_logout.php" style="float:right;">Logout</a>
 </div>
 
 <h2>My Blood Requests</h2>

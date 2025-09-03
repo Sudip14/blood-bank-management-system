@@ -10,63 +10,53 @@ if (!isset($_SESSION['doners_id'])) {
 $doners_id = $_SESSION['doners_id'];
 $message = '';
 
+// Fetch last donation date for eligibility
+$lastDonationQuery = $con->prepare("SELECT last_donation_date FROM doners WHERE id=?");
+$lastDonationQuery->bind_param("i", $doners_id);
+$lastDonationQuery->execute();
+$lastDonationResult = $lastDonationQuery->get_result();
+$lastDonation = $lastDonationResult->fetch_assoc();
+$nextEligibleDate = '';
+if ($lastDonation['last_donation_date']) {
+    $nextEligibleDate = date('Y-m-d', strtotime($lastDonation['last_donation_date'] . ' +3 months'));
+}
+
 if (isset($_POST['book'])) {
     $date = $_POST['appointment_date'];
     $time = $_POST['appointment_time'];
     $location = $_POST['location'];
 
-    // 1. Check if donor already has a future or pending appointment
-    $futureAppointmentQuery = mysqli_query($con, "
-        SELECT * FROM appointments 
-        WHERE doners_id='$doners_id' 
-        AND appointment_date >= CURDATE()
-        AND status IN ('Pending', 'Approved')
-        ORDER BY appointment_date ASC
-        LIMIT 1
-    ");
+    // 1. Check future or pending appointments
+    $stmt1 = $con->prepare("SELECT appointment_date FROM appointments WHERE doners_id=? AND appointment_date >= CURDATE() AND status IN ('Pending','Approved') LIMIT 1");
+    $stmt1->bind_param("i", $doners_id);
+    $stmt1->execute();
+    $res1 = $stmt1->get_result();
 
-    if (mysqli_num_rows($futureAppointmentQuery) > 0) {
-        $existingAppointment = mysqli_fetch_assoc($futureAppointmentQuery);
-        $existingDate = $existingAppointment['appointment_date'];
-        $message = "You already have an appointment on $existingDate. You cannot book a new appointment until this date has passed.";
+    if ($res1->num_rows > 0) {
+        $existingAppointment = $res1->fetch_assoc();
+        $message = "You already have an appointment on {$existingAppointment['appointment_date']}.";
     }
 
-    // 2. Check last completed donation for 3-month rule
-    if (empty($message)) {
-        $lastDonationQuery = mysqli_query($con, "
-            SELECT MAX(appointment_date) as last_date 
-            FROM appointments 
-            WHERE doners_id='$doners_id' AND status='Completed'
-        ");
-        $lastDonation = mysqli_fetch_assoc($lastDonationQuery);
-        $lastDate = $lastDonation['last_date'];
-
-        if ($lastDate) {
-            $minDate = date('Y-m-d', strtotime($lastDate . ' +3 months'));
-            if ($date < $minDate) {
-                $message = "Your last donation was on $lastDate. You can only book your next appointment on or after $minDate.";
-            }
+    // 2. Check 3-month rule
+    if (empty($message) && $lastDonation['last_donation_date']) {
+        $minDate = date('Y-m-d', strtotime($lastDonation['last_donation_date'] . ' +3 months'));
+        if ($date < $minDate) {
+            $message = "Your last donation was on {$lastDonation['last_donation_date']}. You can only book on or after $minDate.";
         }
     }
 
     // 3. Book appointment if eligible
     if (empty($message)) {
-        $insert = mysqli_query($con, "
-            INSERT INTO appointments (doners_id, appointment_date, appointment_time, location, status)
-            VALUES ('$doners_id','$date','$time','$location','Pending')
-        ");
-        $message = $insert ? "Appointment booked successfully at $location!" : "Error booking appointment: " . mysqli_error($con);
+        $stmt2 = $con->prepare("INSERT INTO appointments (doners_id, appointment_date, appointment_time, location, status) VALUES (?, ?, ?, ?, 'Pending')");
+        $stmt2->bind_param("isss", $doners_id, $date, $time, $location);
+        if ($stmt2->execute()) {
+            $message = "Appointment booked successfully at $location!";
+        } else {
+            $message = "Error booking appointment: " . htmlspecialchars($con->error);
+        }
+        $stmt2->close();
     }
-}
-
-// 4. Fetch last donation date for display
-$lastDonationQuery = mysqli_query($con, "
-    SELECT last_donation_date FROM doners WHERE id='$doners_id'
-");
-$lastDonation = mysqli_fetch_assoc($lastDonationQuery);
-$nextEligibleDate = '';
-if ($lastDonation['last_donation_date']) {
-    $nextEligibleDate = date('Y-m-d', strtotime($lastDonation['last_donation_date'] . ' +3 months'));
+    $stmt1->close();
 }
 ?>
 
